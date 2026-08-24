@@ -14,6 +14,7 @@ import * as RNFS from '@dr.pogodin/react-native-fs';
 
 import {getPreset} from '../utils/rag/presets';
 import {l2Normalize} from '../utils/rag/vectorStore';
+import {getRecommendedThreadCount} from '../utils/deviceCapabilities';
 
 export const EMBEDDING_MODELS_DIR = `${RNFS.DocumentDirectoryPath}/kb-models`;
 
@@ -43,6 +44,10 @@ class EmbeddingStore {
 
   private releaseTimer: ReturnType<typeof setTimeout> | null = null;
 
+  /** Cached CPU recommendation so repeated context creation does not
+   * re-query DeviceInfo. Null until first resolved. */
+  private recommendedThreads: number | null = null;
+
   constructor() {
     makeAutoObservable(this, {}, {autoBind: true});
 
@@ -61,6 +66,17 @@ class EmbeddingStore {
     if (!preset) {
       throw new Error(`Unknown embedding preset: ${presetId}`);
     }
+    // Threads: match the chat model's recommendation (80% of cores on
+    // 6+ core devices, all cores below). Indexing is pure CPU, so this
+    // is the single biggest speed lever for large documents.
+    if (this.recommendedThreads == null) {
+      try {
+        this.recommendedThreads = await getRecommendedThreadCount();
+      } catch {
+        this.recommendedThreads = 4;
+      }
+    }
+    const embeddingThreads = this.recommendedThreads;
     const path = modelPathFor(presetId);
     if (!(await RNFS.exists(path))) {
       throw new Error(
@@ -85,8 +101,9 @@ class EmbeddingStore {
         pooling_type: 'mean',
         use_mmap: true,
         // Embedding passes are single-shot and tiny; the chat model's
-        // threadpool settings are intentionally not shared here.
-        n_threads: 4,
+        // context is NOT resident during indexing (separate store), so
+        // the full recommended thread count does not contend with chat.
+        n_threads: embeddingThreads,
       });
       runInAction(() => {
         this.context = context;
@@ -138,6 +155,13 @@ class EmbeddingStore {
       this.releaseTimer = null;
       void this.release();
     }, IDLE_RELEASE_MS);
+  }
+
+  /** Warm the embedding context without embedding anything: hides the
+   * model-load latency (mmap, ~1s) behind file extraction. Fire-and-
+   * forget safe; errors are swallowed by the caller. */
+  async prewarm(presetId: string): Promise<void> {
+    await this.ensureContext(presetId);
   }
 
   async release(): Promise<void> {

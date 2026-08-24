@@ -57,7 +57,17 @@ the phone into the whole stack:
   readers for the rest), so they feed chat and the knowledge base
 - **Agent workspace**: sandboxed `list_files`, `read_file`, `write_file`,
   and `grep_files` talents with strict path jailing, so a Pal can keep
-  notes and files across turns
+  notes and files across turns; a Workspace screen in the drawer browses
+  everything a Pal wrote (preview, share, delete)
+- **Non-blocking attachments**: oversized files no longer stall the first
+  answer; the send goes out with a budget-capped head slice while the full
+  document indexes into the knowledge base in the background, under the
+  same foreground service. The next question gets full retrieval. A
+  reactive progress strip above the input shows extraction and indexing
+  ("Reading report.pdf", "chunk 12/85")
+- **Faster indexing**: the embedding context runs on the CPU's full
+  recommended thread count instead of a fixed 4, and is pre-warmed during
+  file extraction, hiding model-load latency
 - **Background runs**: every generation runs under an Android foreground
   service (dataSync type) with a progress notification, so a long agent
   run survives the app being backgrounded or the screen turning off;
@@ -73,7 +83,7 @@ hybrid retrieval pass:
 
 ```mermaid
 flowchart TD
-    subgraph INGEST["Ingestion, at attach time"]
+    subgraph INGEST["Ingestion, at send time"]
         A["File attached"] --> B{"Office or PDF?"}
         B -->|"PDF DOCX EPUB PPTX XLSX ODT"| C["Text extraction<br/>pdfbox-android, zip/XML readers"]
         B -->|"Text, code, CSV, logs"| D["Raw text"]

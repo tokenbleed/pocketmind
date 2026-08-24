@@ -14,7 +14,7 @@ import {useCameraPermission} from 'react-native-vision-camera';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 import {observer} from 'mobx-react';
-import {IconButton, Icon, Text} from 'react-native-paper';
+import {IconButton, Icon, ProgressBar, Text} from 'react-native-paper';
 
 import {hasVideoCapability} from '../../utils/pal-capabilities';
 
@@ -447,6 +447,48 @@ export const ChatInput = observer(
     return (
       <View style={styles.container}>
         <View style={styles.inputContainer}>
+          {/* Knowledge-base work-in-progress strip: file extraction on
+              the send path, or background indexing kicked off by an
+              oversized attachment. Reactive off the store, so it also
+              covers indexing started from the Knowledge Base screen. */}
+          {(knowledgeBaseStore.extractionName != null ||
+            knowledgeBaseStore.isIndexing) && (
+            <View style={styles.kbProgressBox} testID="kb-progress-strip">
+              <ProgressBar
+                progress={
+                  knowledgeBaseStore.isIndexing &&
+                  knowledgeBaseStore.indexingProgress.total > 0
+                    ? knowledgeBaseStore.indexingProgress.done /
+                      knowledgeBaseStore.indexingProgress.total
+                    : undefined
+                }
+                color={theme.colors.primary}
+                style={styles.kbProgressBar}
+              />
+              <Text
+                variant="labelSmall"
+                style={styles.kbProgressText}
+                numberOfLines={1}>
+                {knowledgeBaseStore.extractionName != null
+                  ? t(l10n.chat.extractingFile, {
+                      name: knowledgeBaseStore.extractionName,
+                    })
+                  : l10n.settings.knowledgeBase.screen.indexingProgress
+                      .replace(
+                        '{{name}}',
+                        knowledgeBaseStore.indexingProgress.name,
+                      )
+                      .replace(
+                        '{{done}}',
+                        String(knowledgeBaseStore.indexingProgress.done),
+                      )
+                      .replace(
+                        '{{total}}',
+                        String(knowledgeBaseStore.indexingProgress.total),
+                      )}
+              </Text>
+            </View>
+          )}
           {/* Edit Bar (when in edit mode) */}
           {isEditMode && (
             <Animated.View

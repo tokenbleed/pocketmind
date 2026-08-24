@@ -186,6 +186,10 @@ export interface AttachmentRecord {
   indexedToKb?: boolean;
   kbDocId?: string;
   kbChunkCount?: number;
+  /** Set when indexing was kicked off in the background at send time:
+   * the first answer saw only a head slice of the file (content,
+   * truncated), and full retrieval is available once indexing lands. */
+  kbIndexingPending?: boolean;
 }
 
 /** Anything the input can show as an attached file chip. */

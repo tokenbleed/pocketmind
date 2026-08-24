@@ -76,6 +76,9 @@ class KnowledgeBaseStore {
   documents: KbDocument[] = [];
   isIndexing = false;
   indexingProgress = {name: '', done: 0, total: 0};
+  /** The file currently being read/extracted on the send path, so the
+   * chat UI can show a stage chip before chunking even starts. */
+  extractionName: string | null = null;
   isDownloadingModel = false;
   downloadProgress = 0; // 0..1
   lastError: string | null = null;
@@ -83,8 +86,18 @@ class KnowledgeBaseStore {
   /** In-memory vector cache: docId -> vectors (not observable). */
   vectorCache = new Map<string, Float32Array[]>();
 
+  /** In-flight indexDocument promises keyed by content hash, so the
+   * same file attached twice (or re-sent while still indexing) is
+   * indexed once, not twice. Excluded from observability (annotation
+   * below); Promise values must not become observable. */
+  inflight = new Map<string, Promise<KbDocument>>();
+
   constructor() {
-    makeAutoObservable(this, {vectorCache: false}, {autoBind: true});
+    makeAutoObservable(
+      this,
+      {vectorCache: false, inflight: false},
+      {autoBind: true},
+    );
     const persistable = makePersistable(this, {
       name: 'KnowledgeBaseStore',
       storage: AsyncStorage,
@@ -231,12 +244,39 @@ class KnowledgeBaseStore {
     text: string;
     source: 'attach' | 'manual';
   }): Promise<KbDocument> {
+    const hash = contentHash(input.text);
+    const running = this.inflight.get(hash);
+    if (running) {
+      // Same content already indexing (e.g. re-attached while the
+      // first pass is still running): share that pass.
+      return running;
+    }
+    const promise = this.indexDocumentInner(input, hash).finally(() => {
+      this.inflight.delete(hash);
+    });
+    this.inflight.set(hash, promise);
+    return promise;
+  }
+
+  private async indexDocumentInner(
+    input: {
+      name: string;
+      mime?: string;
+      size: number;
+      text: string;
+      source: 'attach' | 'manual';
+    },
+    hash: string,
+  ): Promise<KbDocument> {
     const text = input.text;
     if (!text.trim()) {
       throw new Error('Nothing text-readable to index');
     }
 
-    const existing = await this.findByContent(text);
+    const existing =
+      (await knowledgeBaseRepository.findByHash(hash)).find(
+        d => d.status === 'ready',
+      ) ?? null;
     if (existing) {
       return existing;
     }
@@ -255,7 +295,7 @@ class KnowledgeBaseStore {
       name: input.name,
       mime: input.mime,
       size: input.size,
-      contentHash: contentHash(text),
+      contentHash: hash,
       presetId: this.embeddingPresetId,
       dims: this.preset.dims,
       source: input.source,

@@ -1062,7 +1062,12 @@
         "total": "Total: ",
         "usage": "Usage: "
       },
-      "byteSizes": ["Bytes", "KB", "MB", "GB"]
+      "byteSizes": [
+        "Bytes",
+        "KB",
+        "MB",
+        "GB"
+      ]
     },
     "chatView": {
       "menuItems": {
@@ -1233,6 +1238,8 @@
     "completionFailed": "Completion failed: ",
     "fgsFallbackTitle": "PocketPal",
     "fgsPreparing": "Thinking...",
+    "fgsIndexing": "Indexing files into the knowledge base",
+    "extractingFile": "Reading {{name}}",
     "fgsStep": "Step {{n}}",
     "fgsTool": "Running tool: {{name}}",
     "fgsPermissionTitle": "Show run notifications?",

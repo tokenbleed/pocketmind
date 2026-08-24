@@ -130,6 +130,21 @@ export const createStyles = ({
     editBarText: {
       color: theme.colors.onSurfaceVariant,
     },
+    kbProgressBox: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      paddingHorizontal: 12,
+      paddingTop: 6,
+    },
+    kbProgressBar: {
+      height: 4,
+      flex: 0.45,
+    },
+    kbProgressText: {
+      flex: 1,
+      color: theme.colors.onSurfaceVariant,
+    },
     editBarButton: {
       margin: 0,
     },

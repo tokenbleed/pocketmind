@@ -9,6 +9,7 @@ import {randId} from '../utils';
 import {L10nContext} from '../utils';
 import {
   chatSessionStore,
+  embeddingStore,
   knowledgeBaseStore,
   modelStore,
   palStore,
@@ -572,6 +573,26 @@ export const useChatSession = (
     // Attachment files routed into the knowledge base this turn.
     const indexedDocIds: string[] = [];
     let kbBudgetChars = 0;
+    // Background indexing passes kicked off at send time. The message
+    // goes out with a head slice only; these promises are awaited in
+    // the completion path so the foreground service stays alive until
+    // indexing finishes, but the answer is never blocked on it.
+    const kbIndexingPasses: Promise<unknown>[] = [];
+    const hasKbFiles = pendingFiles.length > 0 && knowledgeBaseStore.enabled;
+    if (hasKbFiles) {
+      // Start the run before any file work so extraction and indexing
+      // happen under the foreground service, visible in the drawer of
+      // the notification. Fire-and-forget; never blocks or rejects.
+      startForegroundRun(
+        modelStore.activeModel?.name ?? l10n.chat.fgsFallbackTitle,
+        l10n.chat.fgsPreparing,
+        {
+          title: l10n.chat.fgsPermissionTitle,
+          message: l10n.chat.fgsPermissionMessage,
+          button: l10n.chat.fgsPermissionButton,
+        },
+      );
+    }
     if (pendingFiles.length > 0) {
       try {
         // Context-aware budget: never let file injection eat more than a
@@ -597,44 +618,72 @@ export const useChatSession = (
         // injection budget goes to the knowledge base (index once,
         // retrieve per question) instead of being truncated away. Falls
         // back to direct injection when the KB is off or unavailable.
+        // Pre-warm the embedding context while extraction runs so the
+        // first chunk does not pay the model-load latency.
+        const kbReady =
+          knowledgeBaseStore.enabled &&
+          (await knowledgeBaseStore.isModelDownloaded()) === true;
+        if (kbReady) {
+          void embeddingStore
+            .prewarm(knowledgeBaseStore.embeddingPresetId)
+            .catch(() => {
+              /* model missing/corrupt: indexing below reports it */
+            });
+        }
         const routed: ChatAttachment[] = [];
         const kbRecords: AttachmentRecord[] = [];
         for (const file of pendingFiles) {
-          if (
-            !knowledgeBaseStore.enabled ||
-            !isPendingAttachment(file) ||
-            (await knowledgeBaseStore.isModelDownloaded()) === false
-          ) {
+          if (!isPendingAttachment(file)) {
             routed.push(file);
             continue;
           }
-          const fullText = await readAttachmentText(file);
-          if (fullText === null || fullText.length <= budgetChars) {
-            routed.push(file);
-            continue;
-          }
+          // Extraction stage: visible in the chat UI via the store's
+          // extractionName, so a slow PDF read is not a silent hang.
+          runInAction(() => {
+            knowledgeBaseStore.extractionName = file.name;
+          });
+          let fullText: string | null;
           try {
-            const doc = await knowledgeBaseStore.indexDocument({
-              name: file.name,
-              mime: file.mime,
-              size: file.size,
-              text: fullText,
-              source: 'attach',
+            fullText = await readAttachmentText(file);
+          } finally {
+            runInAction(() => {
+              knowledgeBaseStore.extractionName = null;
             });
-            indexedDocIds.push(doc.id);
-            kbRecords.push({
-              name: file.name,
-              size: file.size,
-              mime: file.mime,
-              content: null,
-              indexedToKb: true,
-              kbDocId: doc.id,
-              kbChunkCount: doc.chunkCount,
-            });
-          } catch (error) {
-            console.warn('[KB] indexing failed, injecting directly:', error);
-            routed.push(file);
           }
+          if (!kbReady || fullText === null || fullText.length <= budgetChars) {
+            routed.push(file);
+            continue;
+          }
+          // Oversized + KB ready: this send sees a head slice under
+          // the same budget direct injection would use; the full text
+          // indexes in the background and retrieval covers later
+          // questions.
+          const headChars = Math.min(fullText.length, Math.max(budgetChars, 0));
+          kbRecords.push({
+            name: file.name,
+            size: file.size,
+            mime: file.mime,
+            content: headChars > 0 ? fullText.slice(0, headChars) : null,
+            truncated: fullText.length > headChars || undefined,
+            indexedToKb: true,
+            kbIndexingPending: true,
+          });
+          kbIndexingPasses.push(
+            knowledgeBaseStore
+              .indexDocument({
+                name: file.name,
+                mime: file.mime,
+                size: file.size,
+                text: fullText,
+                source: 'attach',
+              })
+              .then(doc => {
+                indexedDocIds.push(doc.id);
+              })
+              .catch(error => {
+                console.warn('[KB] background indexing failed:', error);
+              }),
+          );
         }
         attachments = [
           ...kbRecords,
@@ -708,15 +757,19 @@ export const useChatSession = (
     // Foreground service: keeps the run alive when the app is
     // backgrounded mid-generation. Fire-and-forget; the wrapper never
     // rejects and generation must never block on the permission dialog.
-    startForegroundRun(
-      modelStore.activeModel?.name ?? l10n.chat.fgsFallbackTitle,
-      l10n.chat.fgsPreparing,
-      {
-        title: l10n.chat.fgsPermissionTitle,
-        message: l10n.chat.fgsPermissionMessage,
-        button: l10n.chat.fgsPermissionButton,
-      },
-    );
+    // Sends with knowledge-base files already started it above, before
+    // extraction/indexing.
+    if (!hasKbFiles) {
+      startForegroundRun(
+        modelStore.activeModel?.name ?? l10n.chat.fgsFallbackTitle,
+        l10n.chat.fgsPreparing,
+        {
+          title: l10n.chat.fgsPermissionTitle,
+          message: l10n.chat.fgsPermissionMessage,
+          button: l10n.chat.fgsPermissionButton,
+        },
+      );
+    }
 
     const activeSession = chatSessionStore.sessions.find(
       s => s.id === chatSessionStore.activeSessionId,
@@ -1061,6 +1114,14 @@ export const useChatSession = (
         await addSystemMessage(`${l10n.chat.completionFailed}${errorMessage}`);
       }
     } finally {
+      // Keep the foreground service alive until background knowledge-base
+      // indexing lands: it is part of the same "run" even though the
+      // answer already streamed. Failures were already warned in the
+      // pass itself; allSettled never throws here.
+      if (kbIndexingPasses.length > 0) {
+        updateForegroundRun(l10n.chat.fgsIndexing);
+        await Promise.allSettled(kbIndexingPasses);
+      }
       stopForegroundRun();
       try {
         deactivateKeepAwake();

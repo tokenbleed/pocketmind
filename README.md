@@ -12,7 +12,7 @@ no account, no telemetry. Built and tested on a Pixel 8 Pro running
 GrapheneOS. **Android only.**
 
 <table align="center"><tr>
-<td><a href="https://tokenbleed.github.io/pocketmind/"><img src=".github/img/badge_obtainium.png" alt="Get it on Obtainium" height="66" /></a></td>
+<td><a href="https://github.com/tokenbleed/pocketmind/releases"><img src=".github/img/badge_obtainium.png" alt="Get it on Obtainium" height="66" /></a></td>
 <td><a href="https://github.com/tokenbleed/pocketmind/releases/latest"><img src="https://img.shields.io/github/v/release/tokenbleed/pocketmind?style=for-the-badge&label=Latest%20APK&color=2D2D2D&logo=github" alt="Latest APK" /></a></td>
 </tr></table>
 

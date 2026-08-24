@@ -5,6 +5,7 @@ export const ROUTES = {
   MODELS: 'Models',
   PALS: 'Pals (experimental)',
   KNOWLEDGE_BASE: 'Knowledge Base',
+  WORKSPACE: 'Workspace',
   BENCHMARK: 'Benchmark',
   SETTINGS: 'Settings',
   APP_INFO: 'App Info',

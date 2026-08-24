@@ -208,3 +208,88 @@ export async function walkWorkspace(
 export function looksBinary(prefix: string): boolean {
   return prefix.includes('\0');
 }
+
+// --- Workspace browser (screen) helpers ---------------------------------
+// These sit on top of the same jail the talents use, but return richer
+// entries (absolute path, mtime) for the Workspace screen listing.
+
+export interface WorkspaceFileEntry {
+  relPath: string;
+  absPath: string;
+  size: number;
+  mtime: number | null;
+}
+
+const MAX_BROWSER_ENTRIES = 1000;
+
+export async function listWorkspaceFiles(): Promise<WorkspaceFileEntry[]> {
+  await ensureWorkspace();
+  const root = workspaceRoot();
+  const out: WorkspaceFileEntry[] = [];
+
+  async function walk(absDir: string, relDir: string, depth: number) {
+    if (depth > MAX_WALK_DEPTH || out.length >= MAX_BROWSER_ENTRIES) {
+      return;
+    }
+    let items;
+    try {
+      items = await RNFS.readDir(absDir);
+    } catch {
+      return; // unreadable subtree: skip, do not fail the listing
+    }
+    for (const it of items) {
+      if (out.length >= MAX_BROWSER_ENTRIES) {
+        return;
+      }
+      if (it.isDirectory()) {
+        await walk(
+          it.path,
+          relDir ? `${relDir}/${it.name}` : it.name,
+          depth + 1,
+        );
+      } else {
+        out.push({
+          relPath: relDir ? `${relDir}/${it.name}` : it.name,
+          absPath: it.path,
+          size: it.size ?? 0,
+          mtime: it.mtime instanceof Date ? it.mtime.getTime() : null,
+        });
+      }
+    }
+  }
+
+  await walk(root, '', 0);
+  // Newest first: what the model touched last is what you look for.
+  out.sort((a, b) => (b.mtime ?? 0) - (a.mtime ?? 0));
+  return out;
+}
+
+/** Read a workspace file as text for preview. Throws when the file is
+ * binary or oversized; the screen maps that to a "not text" notice. */
+export async function readWorkspaceText(
+  absPath: string,
+  maxChars: number,
+): Promise<string> {
+  const stat = await RNFS.stat(absPath);
+  if ((stat.size ?? 0) > MAX_READABLE_FILE_BYTES) {
+    throw new Error('file too large to preview');
+  }
+  const content = await RNFS.readFile(absPath, 'utf8');
+  if (looksBinary(content.slice(0, 4096))) {
+    throw new Error('binary file');
+  }
+  return content.length > maxChars ? content.slice(0, maxChars) : content;
+}
+
+/** Delete one workspace file (not directories). Tolerates a missing
+ * file so a double-tap on a stale listing does not error. */
+export async function deleteWorkspaceFile(absPath: string): Promise<void> {
+  try {
+    await RNFS.unlink(absPath);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (!/exist|no such/i.test(msg)) {
+      throw e;
+    }
+  }
+}

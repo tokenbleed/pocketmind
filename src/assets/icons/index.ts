@@ -4,6 +4,8 @@ export {default as AtomIcon} from './atom.svg';
 export {default as BenchmarkIcon} from './benchmark.svg';
 export {default as BookIcon} from './book.svg';
 export {default as BrowserIcon} from './browser.svg';
+// Agent-workspace drawer icon (same 24px stroke system as book.svg).
+export {default as FolderIcon} from './folder.svg';
 export {default as CameraIcon} from './camera.svg';
 export {default as ChatIcon} from './chat.svg';
 export {default as CheckCircleIcon} from './check-circle.svg';

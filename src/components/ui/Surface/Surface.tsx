@@ -19,7 +19,7 @@ export type SurfaceProps = Omit<CommonDSProps, 'disabled'> & {
    * Android-only `elevation` style. iOS shadows are consumer-owned -
    * if a surface needs a drop shadow on iOS, pass
    * `shadowColor/Offset/Opacity/Radius` on the `style` prop alongside
-   * `elevation` (the pattern other pocketpal screens already use).
+   * `elevation` (the pattern other PocketMind screens already use).
    * Defaults to `1` matching Paper Surface v5's default elevation value.
    */
   elevation?: number;

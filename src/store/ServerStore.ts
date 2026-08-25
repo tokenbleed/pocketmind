@@ -16,7 +16,9 @@ import {ReasoningCapability} from '../utils/reasoningCapability';
 import {deriveListCapsMap} from '../utils/listCaps';
 import type {ListDerivedCaps} from '../utils/listCaps';
 
-const KEYCHAIN_SERVICE_PREFIX = 'pocketpal-server-';
+const KEYCHAIN_SERVICE_PREFIX = 'pocketmind-server-';
+// Pre-rebrand prefix; entries are migrated once after hydration.
+const LEGACY_KEYCHAIN_SERVICE_PREFIX = 'pocketpal-server-';
 
 /** Minimum interval between auto-fetch cycles (ms) */
 const FETCH_THROTTLE_MS = 60000;
@@ -78,6 +80,7 @@ class ServerStore {
     }).then(() => {
       // After hydration, fetch models for all servers
       this.fetchAllRemoteModels();
+      this.migrateLegacyKeychainServices();
     });
 
     this.setupAppStateListener();
@@ -239,6 +242,38 @@ class ServerStore {
       });
     } catch (error) {
       console.error('Failed to remove API key:', error);
+    }
+  }
+
+  /**
+   * One-time migration of keychain entries from the pre-rebrand service
+   * prefix to the current one. For each known server: if the new service
+   * is empty and the legacy one holds a key, copy it forward and reset the
+   * legacy entry. Never throws; failures leave the legacy entry intact.
+   */
+  private async migrateLegacyKeychainServices(): Promise<void> {
+    for (const server of this.servers) {
+      try {
+        const current = await Keychain.getGenericPassword({
+          service: `${KEYCHAIN_SERVICE_PREFIX}${server.id}`,
+        });
+        if (current) {
+          continue;
+        }
+        const legacy = await Keychain.getGenericPassword({
+          service: `${LEGACY_KEYCHAIN_SERVICE_PREFIX}${server.id}`,
+        });
+        if (legacy && legacy.password) {
+          await Keychain.setGenericPassword('apiKey', legacy.password, {
+            service: `${KEYCHAIN_SERVICE_PREFIX}${server.id}`,
+          });
+          await Keychain.resetGenericPassword({
+            service: `${LEGACY_KEYCHAIN_SERVICE_PREFIX}${server.id}`,
+          });
+        }
+      } catch {
+        // Leave the legacy entry for the next boot.
+      }
     }
   }
 

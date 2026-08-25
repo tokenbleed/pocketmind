@@ -1,4 +1,4 @@
-# PocketPal application CMake.
+# PocketMind application CMake.
 #
 # Why this file exists at all: dropping `externalNativeBuild.cmake.path`
 # in build.gradle disables the React Native plugin's auto-injection of

@@ -4,6 +4,11 @@
     <include domain="database" path="." requireFlags="clientSideEncryption"/>
     <include domain="file" path="profileInstalled" requireFlags="clientSideEncryption"/>
     <include domain="file" path="db-migration-complete.flag" requireFlags="clientSideEncryption"/>
+    <include domain="root" path="pocketmind.db" requireFlags="clientSideEncryption"/>
+    <include domain="root" path="pocketmind.db-wal" requireFlags="clientSideEncryption"/>
+    <include domain="root" path="pocketmind.db-shm" requireFlags="clientSideEncryption"/>
+    <!-- Pre-rename name: still listed so a backup taken before the rename
+         restores cleanly; MainApplication migrates it on next boot. -->
     <include domain="root" path="pocketpalai.db" requireFlags="clientSideEncryption"/>
     <include domain="root" path="pocketpalai.db-wal" requireFlags="clientSideEncryption"/>
     <include domain="root" path="pocketpalai.db-shm" requireFlags="clientSideEncryption"/>

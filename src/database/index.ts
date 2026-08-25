@@ -18,7 +18,7 @@ import {
 const adapter = new SQLiteAdapter({
   schema,
   migrations,
-  dbName: 'pocketpalai',
+  dbName: 'pocketmind',
   jsi: true, // enable JSI for better performance if available
   onSetUpError: error => {
     console.error('Database setup error:', error);

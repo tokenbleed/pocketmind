@@ -81,7 +81,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.pocketpal"
+    namespace "io.github.tokenbleed.pocketmind"
     defaultConfig {
         applicationId "io.github.tokenbleed.pocketmind"
         minSdkVersion rootProject.ext.minSdkVersion

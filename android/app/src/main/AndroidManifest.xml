@@ -51,11 +51,14 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
         <!-- Host-scoped deep link for the Hugging Face "Use this model" flow.
-             Scoped to host=hub so this is not a bare-scheme handler. -->
+             Scoped to host=hub so this is not a bare-scheme handler. Two
+             schemes: pocketmind (ours) and pocketpal (external hub pages
+             still emit it, keep receiving them). -->
         <intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="pocketmind" android:host="hub" />
             <data android:scheme="pocketpal" android:host="hub" />
         </intent-filter>
         <!-- Share sheet: receive plain-text shares from other apps. The
@@ -65,7 +68,7 @@
             <category android:name="android.intent.category.DEFAULT" />
             <data android:mimeType="text/plain" />
         </intent-filter>
-        <!-- Text selection menu (PROCESS_TEXT): "Ask PocketPal" entry for
+        <!-- Text selection menu (PROCESS_TEXT): "Ask PocketMind" entry for
              selected text. Same parking flow as SEND. -->
         <intent-filter>
             <action android:name="android.intent.action.PROCESS_TEXT" />
@@ -74,12 +77,14 @@
         </intent-filter>
         <!-- Checkout callback for the in-app PalsHub purchase flow. Scoped to
              host=checkout so it is routed to AuthSessionModule, not the
-             hub deep-link path. -->
+             hub deep-link path. The scheme stays pocketpal: the redirect is
+             produced server-side by the PalsHub site. -->
         <intent-filter>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="pocketpal" android:host="checkout" />
+            <data android:scheme="pocketmind" android:host="checkout" />
         </intent-filter>
       </activity>
 

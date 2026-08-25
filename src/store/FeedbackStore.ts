@@ -2,7 +2,9 @@ import {makeAutoObservable} from 'mobx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {v4 as uuidv4} from 'uuid';
 
-const FEEDBACK_ID_STORAGE_KEY = '@pocketpal_ai/app_feedback_id';
+const FEEDBACK_ID_STORAGE_KEY = '@pocketmind/app_feedback_id';
+// Pre-rebrand key; migrated once on first read after the rename.
+const LEGACY_FEEDBACK_ID_STORAGE_KEY = '@pocketpal_ai/app_feedback_id';
 
 /**
  * Manages a persistent ID for feedback submissions to:
@@ -24,7 +26,18 @@ class FeedbackStore {
    */
   private async initializeFeedbackId() {
     try {
-      const storedId = await AsyncStorage.getItem(FEEDBACK_ID_STORAGE_KEY);
+      let storedId = await AsyncStorage.getItem(FEEDBACK_ID_STORAGE_KEY);
+      if (!storedId) {
+        // One-time migration from the pre-rebrand key.
+        const legacyId = await AsyncStorage.getItem(
+          LEGACY_FEEDBACK_ID_STORAGE_KEY,
+        );
+        if (legacyId) {
+          await AsyncStorage.setItem(FEEDBACK_ID_STORAGE_KEY, legacyId);
+          await AsyncStorage.removeItem(LEGACY_FEEDBACK_ID_STORAGE_KEY);
+          storedId = legacyId;
+        }
+      }
       if (storedId) {
         this._feedbackId = storedId;
         return;

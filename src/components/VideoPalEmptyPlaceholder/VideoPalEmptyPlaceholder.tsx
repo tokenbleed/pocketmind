@@ -21,7 +21,7 @@ export const VideoPalEmptyPlaceholder = observer(
       <View
         style={[styles.container, {paddingBottom: bottomComponentHeight + 20}]}>
         <Image
-          source={require('../../assets/pocketpal-dark-v2.png')}
+          source={require('../../assets/pocketmind-dark-v2.png')}
           style={styles.logo}
           resizeMode="contain"
         />

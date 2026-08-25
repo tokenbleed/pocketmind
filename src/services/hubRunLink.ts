@@ -1,5 +1,5 @@
 /**
- * Parser for the `pocketpal://hub/run` deep link.
+ * Parser for the `pocketmind://hub/run` deep link (the legacy `pocketpal://` scheme is still received for links emitted by external hub pages).
  *
  * This is the single parse/validate site for the hub/run route. Both delivery
  * paths (iOS native emitter, Android prod Linking) call it on a raw URL string.
@@ -31,7 +31,7 @@ const isValidRepoId = (value: string): boolean => {
 };
 
 /**
- * True only for the exact `pocketpal://hub/run` route (host=hub, path=run),
+ * True only for the exact `...://hub/run` route (either scheme) (host=hub, path=run),
  * regardless of query payload. Gates the delivery paths so non-hub URLs and
  * unknown hub paths are ignored silently; a malformed `hub/run` payload still
  * reaches the handler (and alerts). Never throws.

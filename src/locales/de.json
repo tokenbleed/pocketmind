@@ -439,7 +439,7 @@
     "screenTitle": "App-Info",
     "description": "Eine App, die Sprachmodelle direkt auf Ihr Smartphone bringt. Sitzt auf den Schultern von llama.cpp und llama.rn.",
     "supportProject": "Unterstütz das Projekt",
-    "supportProjectDescription": "Wenn Sie PocketPal AI gerne nutzen, überdenken Sie bitte eine Unterstützung des Projektes mittels:",
+    "supportProjectDescription": "Wenn Sie PocketMind gerne nutzen, überdenken Sie bitte eine Unterstützung des Projektes mittels:",
     "githubButton": "Sternvergabe auf Github",
     "orText": "oder",
     "orBy": "oder durch",
@@ -449,10 +449,10 @@
   },
   "feedback": {
     "title": "Feedback senden",
-    "description": "Ihre Stimme ist wichtig! Sagen Sie uns, wie PocketPal AI Ihnen hilft und was wir tun können, um es noch nützlicher zu machen.",
+    "description": "Ihre Stimme ist wichtig! Sagen Sie uns, wie PocketMind Ihnen hilft und was wir tun können, um es noch nützlicher zu machen.",
     "shareThoughtsButton": "Ihre Gedanken teilen",
     "useCase": {
-      "label": "Wofür verwenden Sie PocketPal AI?",
+      "label": "Wofür verwenden Sie PocketMind?",
       "placeholder": "z.b. zur Zusammenfassung, für Rollenspiele, etc."
     },
     "featureRequests": {
@@ -464,7 +464,7 @@
       "placeholder": "Teilen Sie ihre weiteren Gedanken mit."
     },
     "usageFrequency": {
-      "label": "Wie oft verwenden Sie PocketPal AI? (Optional)",
+      "label": "Wie oft verwenden Sie PocketMind? (Optional)",
       "options": {
         "daily": "Täglich",
         "weekly": "Wöchentlich",
@@ -519,7 +519,7 @@
     },
     "chatEmptyPlaceholder": {
       "noModelsTitle": "Keine Modelle verfügbar",
-      "noModelsDescription": "Um ein Gespräch zu beginnen, laden Sie ein Modell mit PocketPal herunter",
+      "noModelsDescription": "Um ein Gespräch zu beginnen, laden Sie ein Modell mit PocketMind herunter",
       "noModelsButton": "Modell herunterladen",
       "activateModelTitle": "Modell aktivieren, um zu starten",
       "activateModelDescription": "Wählen Sie das Modell aus und laden Sie es herunter. Tippen Sie nach dem Download neben dem Modell auf 'Laden' und beginnen Sie mit dem Chat.",
@@ -569,7 +569,7 @@
     },
     "modelErrorReportSheet": {
       "title": "Bericht Fehler beim laden eines Modells",
-      "privacyNote": "Helfen Sie uns, PocketPal zu verbessern, indem Sie Details über diesen Fehler teilen. Überprüfen Sie unten, was geteilt wird - Sie können alle Elemente entfernen, die Sie lieber nicht teilen wollen.",
+      "privacyNote": "Helfen Sie uns, PocketMind zu verbessern, indem Sie Details über diesen Fehler teilen. Überprüfen Sie unten, was geteilt wird - Sie können alle Elemente entfernen, die Sie lieber nicht teilen wollen.",
       "errorMessage": "Fehlermeldung",
       "modelInfo": "Modellinformation",
       "modelName": "Name",
@@ -587,7 +587,7 @@
       "submit": "Bericht senden",
       "success": {
         "title": "Bericht gesendet",
-        "message": "Danke, dass Sie uns helfen, PocketPal zu verbessern. Ihr Bericht hilft uns, dieses Problem zu beheben."
+        "message": "Danke, dass Sie uns helfen, PocketMind zu verbessern. Ihr Bericht hilft uns, dieses Problem zu beheben."
       },
       "error": {
         "title": "Bericht senden gescheitert",

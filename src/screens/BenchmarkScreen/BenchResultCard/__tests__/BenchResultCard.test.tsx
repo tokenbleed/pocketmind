@@ -164,7 +164,6 @@ describe('BenchResultCard', () => {
     );
 
     expect(getByText(/✓ Shared to/)).toBeTruthy();
-    expect(getByText(/AI Phone Leaderboard ↗/)).toBeTruthy();
   });
 
   it('disables sharing for local models', () => {
@@ -177,23 +176,6 @@ describe('BenchResultCard', () => {
     );
 
     expect(getByText('Cannot share')).toBeTruthy();
-  });
-
-  it('opens leaderboard when link is clicked', () => {
-    const {getByText} = render(
-      <BenchResultCard
-        result={mockResult}
-        onDelete={mockOnDelete}
-        onShare={mockOnShare}
-      />,
-    );
-
-    const leaderboardLink = getByText('View leaderboard ↗');
-    fireEvent.press(leaderboardLink);
-
-    expect(Linking.openURL).toHaveBeenCalledWith(
-      'https://huggingface.co/spaces/a-ghorbani/ai-phone-leaderboard',
-    );
   });
 
   it('submits benchmark data when submit button is pressed', async () => {
@@ -335,23 +317,6 @@ describe('BenchResultCard', () => {
     });
 
     expect(mockOnShare).toHaveBeenCalledWith(mockResult);
-  });
-
-  it('opens leaderboard when link is clicked on submitted results', () => {
-    const {getByText} = render(
-      <BenchResultCard
-        result={mockSubmittedResult}
-        onDelete={mockOnDelete}
-        onShare={mockOnShare}
-      />,
-    );
-
-    const leaderboardText = getByText(/AI Phone Leaderboard ↗/);
-    fireEvent.press(leaderboardText);
-
-    expect(Linking.openURL).toHaveBeenCalledWith(
-      'https://huggingface.co/spaces/a-ghorbani/ai-phone-leaderboard',
-    );
   });
 
   it('renders without initSettings or peakMemoryUsage', () => {

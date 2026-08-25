@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react';
-import {View, Linking} from 'react-native';
+import {View} from 'react-native';
 
 import {Card, Text, Button, Tooltip} from 'react-native-paper';
 
@@ -70,12 +70,6 @@ export const BenchResultCard = ({result, onDelete, onShare}: Props) => {
       return `${minutes}m ${remainingSeconds}s`;
     }
     return `${seconds}s`;
-  };
-
-  const openLeaderboard = () => {
-    Linking.openURL(
-      'https://huggingface.co/spaces/a-ghorbani/ai-phone-leaderboard',
-    );
   };
 
   const getErrorIcon = () => {
@@ -309,10 +303,7 @@ export const BenchResultCard = ({result, onDelete, onShare}: Props) => {
           {result.submitted ? (
             <View style={styles.shareContainer}>
               <Text variant="bodySmall" style={styles.submittedText}>
-                {l10n.benchmark.benchmarkResultCard.actions.submittedText}{' '}
-                <Text onPress={openLeaderboard} style={styles.leaderboardLink}>
-                  {l10n.benchmark.benchmarkResultCard.actions.leaderboardLink}
-                </Text>
+                {l10n.benchmark.benchmarkResultCard.actions.submittedText}
               </Text>
             </View>
           ) : !result.oid ? (
@@ -340,12 +331,6 @@ export const BenchResultCard = ({result, onDelete, onShare}: Props) => {
                 style={styles.submitButton}>
                 {l10n.benchmark.benchmarkResultCard.actions.submitButton}
               </Button>
-              <Text
-                variant="bodySmall"
-                onPress={openLeaderboard}
-                style={styles.leaderboardLink}>
-                {l10n.benchmark.benchmarkResultCard.actions.viewLeaderboard}
-              </Text>
             </View>
           )}
         </View>

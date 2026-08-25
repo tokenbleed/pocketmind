@@ -167,7 +167,7 @@
     "languageSearchPlaceholder": "Pesquisar idiomas",
     "internetSearch": {
       "title": "Pesquisa na Internet",
-      "description": "Permita que os Pals pesquisem na web com as suas próprias ferramentas. Traga a sua própria chave de API - o PocketPal nunca guarda as suas chaves nem encaminha as suas pesquisas.",
+      "description": "Permita que os Pals pesquisem na web com as suas próprias ferramentas. Traga a sua própria chave de API - o PocketMind nunca guarda as suas chaves nem encaminha as suas pesquisas.",
       "providerLabel": "Fornecedor de pesquisa",
       "providerGated": "Em breve",
       "keyLabel": "Chave de API",
@@ -183,7 +183,7 @@
       "resultCountLabel": "Resultados por pesquisa",
       "resultCountDescription": "Menos resultados deixam mais espaço no contexto do modelo.",
       "consentTitle": "As pesquisas saem do seu dispositivo",
-      "consentDescription": "Quando um Pal pesquisa na web, a sua pesquisa é enviada ao fornecedor selecionado através da internet. Quando um Pal lê uma página, o URL e o conteúdo da página podem, em alternativa, ser enviados a um serviço de leitura predefinido (r.jina.ai) caso o fornecedor selecionado não tenha leitor nativo. As chaves e as pesquisas nunca são enviadas ao PocketPal.",
+      "consentDescription": "Quando um Pal pesquisa na web, a sua pesquisa é enviada ao fornecedor selecionado através da internet. Quando um Pal lê uma página, o URL e o conteúdo da página podem, em alternativa, ser enviados a um serviço de leitura predefinido (r.jina.ai) caso o fornecedor selecionado não tenha leitor nativo. As chaves e as pesquisas nunca são enviadas ao PocketMind.",
       "consentAccept": "Compreendo",
       "consentRequired": "Aceite o aviso acima para definir uma chave e ativar a pesquisa.",
       "consentGivenTitle": "A pesquisa na web está ativada",
@@ -505,7 +505,7 @@
     "screenTitle": "Sobre a App",
     "description": "Uma app que traz modelos de linguagem diretamente para o seu telemóvel. Construído sobre o llama.cpp e o llama.rn.",
     "supportProject": "Apoie o Projeto",
-    "supportProjectDescription": "Se gosta de usar o PocketPal AI, considere apoiar o projeto:",
+    "supportProjectDescription": "Se gosta de usar o PocketMind, considere apoiar o projeto:",
     "githubButton": "Dar uma estrela no GitHub",
     "orText": "ou",
     "orBy": "ou por",
@@ -513,17 +513,17 @@
     "versionCopiedTitle": "Versão copiada",
     "versionCopiedDescription": "As informações de versão foram copiadas para a área de transferência",
     "tour": "Tour",
-    "tourDescription": "Reveja os ecrãs de boas-vindas para ver o que o PocketPal AI oferece.",
+    "tourDescription": "Reveja os ecrãs de boas-vindas para ver o que o PocketMind oferece.",
     "showIntroButton": "Mostrar introdução novamente",
     "privacyPolicy": "Política de Privacidade",
     "termsOfService": "Termos de Serviço"
   },
   "feedback": {
     "title": "Enviar Feedback",
-    "description": "A sua opinião importa! Conte-nos como o PocketPal AI está a ajudá-lo e o que podemos fazer para fazê-lo ainda mais útil.",
+    "description": "A sua opinião importa! Conte-nos como o PocketMind está a ajudá-lo e o que podemos fazer para fazê-lo ainda mais útil.",
     "shareThoughtsButton": "A partilhar as suas ideias",
     "useCase": {
-      "label": "Para que usa o PocketPal AI?",
+      "label": "Para que usa o PocketMind?",
       "placeholder": "ex.: resumo, interpretação de personagem, etc."
     },
     "featureRequests": {
@@ -535,7 +535,7 @@
       "placeholder": "Partilhe quaisquer outras ideias que tenha."
     },
     "usageFrequency": {
-      "label": "Com que frequência usa o PocketPal AI? (Opcional)",
+      "label": "Com que frequência usa o PocketMind? (Opcional)",
       "options": {
         "daily": "Diariamente",
         "weekly": "Semanalmente",
@@ -604,7 +604,7 @@
     },
     "chatEmptyPlaceholder": {
       "noModelsTitle": "Nenhum Modelo Disponível",
-      "noModelsDescription": "Descarregue um modelo para começar a conversar com o PocketPal",
+      "noModelsDescription": "Descarregue um modelo para começar a conversar com o PocketMind",
       "noModelsButton": "Descarregar Modelo",
       "activateModelTitle": "Ative um Modelo para Começar",
       "activateModelDescription": "Selecione o modelo e descarregue-o. Após a descarga, toque em Carregar ao lado do modelo e comece a conversar.",
@@ -657,7 +657,7 @@
     },
     "modelErrorReportSheet": {
       "title": "Denunciar Problema ao Carregar Modelo",
-      "privacyNote": "Ajude-nos a melhorar o PocketPal a partilhar pormenores sobre este erro. Revise abaixo o que será partilhado - pode desmarcar qualquer elemento que preferir não incluir.",
+      "privacyNote": "Ajude-nos a melhorar o PocketMind a partilhar pormenores sobre este erro. Revise abaixo o que será partilhado - pode desmarcar qualquer elemento que preferir não incluir.",
       "errorMessage": "Mensagem de erro",
       "modelInfo": "Informações do Modelo",
       "modelName": "Nome",
@@ -675,7 +675,7 @@
       "submit": "Enviar Denúncia",
       "success": {
         "title": "Denúncia Enviada",
-        "message": "Obrigado por nos ajudar a melhorar o PocketPal. A sua denúncia ajudará-nos a corrigir este problema."
+        "message": "Obrigado por nos ajudar a melhorar o PocketMind. A sua denúncia ajudará-nos a corrigir este problema."
       },
       "error": {
         "title": "Falha na Denúncia",
@@ -1137,7 +1137,7 @@
   },
   "camera": {
     "permissionTitle": "Permissão de Câmara Necessária",
-    "permissionMessage": "O PocketPal precisa de acesso à câmara para analisar imagens",
+    "permissionMessage": "O PocketMind precisa de acesso à câmara para analisar imagens",
     "requestingPermission": "A solicitar permissão de câmara...",
     "noDevice": "Nenhum dispositivo de câmara encontrado",
     "errorTitle": "Erro de Câmara",
@@ -1151,7 +1151,7 @@
   },
   "video": {
     "permissionTitle": "Permissão de Câmara Necessária",
-    "permissionMessage": "O PocketPal precisa de acesso à câmara para análise de vídeo",
+    "permissionMessage": "O PocketMind precisa de acesso à câmara para análise de vídeo",
     "requestingPermission": "A solicitar permissão de câmara...",
     "noDevice": "Nenhum dispositivo de câmara encontrado",
     "errorTitle": "Erro de Câmara",
@@ -1497,13 +1497,13 @@
     "skip": "Ignorar",
     "skipForNow": "Ignorar por agora",
     "splash": {
-      "brand": "PocketPal"
+      "brand": "PocketMind"
     },
     "screen1": {
       "title": "Conheça os seus pals.",
       "body": "Pequenos amigos inteligentes que vivem dentro do seu telemóvel.\nVamos ajudá-lo a configurar - vai levar só um minuto.",
       "cta": "Mostre-me Como Funciona",
-      "eyebrow": "Bem-vindo ao PocketPal",
+      "eyebrow": "Bem-vindo ao PocketMind",
       "titleAccent": "pals."
     },
     "screen2": {

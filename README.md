@@ -1,15 +1,14 @@
 <div align="center">
 
-<img src="src/assets/pocketpal-dark-v2.png" alt="PocketPal AI logo" width="120" />
+<img src="src/assets/pocketpal-dark-v2.png" alt="PocketMind logo" width="120" />
 
 # PocketMind
 
 **A private, autonomous AI that runs entirely on your phone.**
 
-Fork of [PocketPal AI](https://github.com/a-ghorbani/pocketpal-ai) with a
-focus on knowledge, autonomy, and running your own local models - no cloud,
-no account, no telemetry. Built and tested on a Pixel 8 Pro running
-GrapheneOS. **Android only.**
+A focus on knowledge, autonomy, and running your own local models - no
+cloud, no account, no telemetry. Built and tested on a Pixel 8 Pro
+running GrapheneOS. **Android only.**
 
 <table align="center"><tr>
 <td><a href="https://github.com/tokenbleed/pocketmind/releases"><img src=".github/img/badge_obtainium.png" alt="Get it on Obtainium" height="66" /></a></td>
@@ -21,10 +20,10 @@ arm64-v8a and x86_64, no per-device variants.
 
 </div>
 
-## What this fork aims to accomplish
+## What PocketMind aims to accomplish
 
-Upstream PocketPal is a chat client for local GGUF models. This fork turns
-the phone into the whole stack:
+A chat client for local GGUF models is the floor, not the goal. PocketMind
+turns the phone into the whole stack:
 
 1. **Knowledge, not just chat.** A local knowledge base: documents are
    chunked, embedded, and retrieved per question (hybrid BM25 + dense
@@ -41,7 +40,7 @@ the phone into the whole stack:
 4. **Degoogled-first.** Distributed as plain APKs via GitHub releases for
    Obtainium users. No Play Services dependency for core features.
 
-## Shipped in this fork
+## Shipped
 
 - **File attachments**: share or attach any text-like file (code, markdown,
   CSV, logs, config) into chat; content is injected into the prompt with a
@@ -72,6 +71,12 @@ the phone into the whole stack:
   service (dataSync type) with a progress notification, so a long agent
   run survives the app being backgrounded or the screen turning off;
   the notification follows agent steps and tool calls
+- **Share sheet intake**: send selected text or shared links into a chat
+  from any app (ACTION_SEND / ACTION_PROCESS_TEXT); text lands in the
+  input, never auto-sends
+- **Local API server**: OpenAI-compatible `/v1/chat/completions` and
+  `/v1/models` endpoints served from the loaded model over LAN (loopback
+  default, key required when opened up)
 - **Latency pack**: extractive sentence-level quote trimming, tuned defaults,
   warm embedding context
 
@@ -128,16 +133,6 @@ Two design notes behind the shape of that graph:
 
 - Telegram connector (Bot API) for messages and files in and out
 
-## Relationship to upstream
-
-This is a personal fork of
-[PocketPal AI](https://github.com/a-ghorbani/pocketpal-ai) by
-[Amin Ghorbani](https://github.com/a-ghorbani). Upstream is MIT-licensed and
-deserves the credit for the app, the model manager, and the llama.rn
-integration; this fork diverges on the knowledge-base and autonomy direction.
-It is not affiliated with the upstream project, and it is not on any app
-store. Pull requests welcome once the roadmap stabilizes.
-
 ## Engineering notes
 
 An honest admission first: given a free hand, this would have been written
@@ -188,4 +183,6 @@ removed. To build for iOS again, restore them from upstream.
 
 ## License
 
-MIT, inherited from upstream. See [LICENSE](./LICENSE).
+MIT. PocketMind builds on the MIT-licensed
+[PocketPal AI](https://github.com/a-ghorbani/pocketpal-ai) by Asghar
+Ghorbani; see [LICENSE](./LICENSE) for the full notice.

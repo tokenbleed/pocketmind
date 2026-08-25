@@ -6,7 +6,7 @@
  *   fetchModelFilesDetails (fetch), fetchGGUFSpecs (fetch).
  *
  * DeviceInfo.getVersion() is mocked to '1.0.0' via the device-info fixture, so
- * the expected UA is `PocketPal/1.0.0 (ai.pocketpal)`.
+ * the expected UA is `PocketMind/1.0.0 (io.github.tokenbleed.pocketmind)`.
  */
 
 import axios from 'axios';
@@ -22,14 +22,14 @@ import {hfUserAgent} from '../../utils/hfUserAgent';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-const EXPECTED_UA = 'PocketPal/1.0.0 (ai.pocketpal)';
+const EXPECTED_UA = 'PocketMind/1.0.0 (io.github.tokenbleed.pocketmind)';
 
 describe('hf.ts attribution User-Agent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('hfUserAgent builds PocketPal/<version> (ai.pocketpal)', () => {
+  it('hfUserAgent builds PocketMind/<version> (io.github.tokenbleed.pocketmind)', () => {
     expect(hfUserAgent()).toBe(EXPECTED_UA);
   });
 

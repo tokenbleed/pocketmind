@@ -167,7 +167,7 @@
     "serverTypeHelp": "自動検出されます。誤っている場合は変更してください。",
     "internetSearch": {
       "title": "インターネット検索",
-      "description": "Palが自分のツールでウェブを検索できるようにします。APIキーはご自身のものをご用意ください。PocketPalがキーを保持したり、クエリを中継したりすることは一切ありません。",
+      "description": "Palが自分のツールでウェブを検索できるようにします。APIキーはご自身のものをご用意ください。PocketMindがキーを保持したり、クエリを中継したりすることは一切ありません。",
       "providerLabel": "検索プロバイダー",
       "providerGated": "近日公開",
       "keyLabel": "APIキー",
@@ -183,7 +183,7 @@
       "resultCountLabel": "検索ごとの結果数",
       "resultCountDescription": "結果数を減らすと、モデルのコンテキストに余裕が生まれます。",
       "consentTitle": "検索はデバイスの外に送信されます",
-      "consentDescription": "Palがウェブを検索すると、クエリはインターネット経由で選択したプロバイダーに送信されます。Palがページを読み取る際、選択したプロバイダーに独自のリーダーがない場合は、代わりにURLとページの内容がデフォルトのリーダーサービス（r.jina.ai）に送信されることがあります。キーとクエリがPocketPalに送信されることは一切ありません。",
+      "consentDescription": "Palがウェブを検索すると、クエリはインターネット経由で選択したプロバイダーに送信されます。Palがページを読み取る際、選択したプロバイダーに独自のリーダーがない場合は、代わりにURLとページの内容がデフォルトのリーダーサービス（r.jina.ai）に送信されることがあります。キーとクエリがPocketMindに送信されることは一切ありません。",
       "consentAccept": "理解しました",
       "consentRequired": "キーを設定して検索を有効にするには、上記の説明に同意してください。",
       "consentGivenTitle": "ウェブ検索が有効になっています",
@@ -505,7 +505,7 @@
     "screenTitle": "アプリ情報",
     "description": "言語モデルをスマートフォンで直接利用できるアプリです、llama.cppとllama.rnをベースに開発されています",
     "supportProject": "プロジェクトを応援する",
-    "supportProjectDescription": "PocketPal AIをご利用いただき楽しんでいただけているなら、以下の方法でプロジェクトを応援いただけると幸いです：",
+    "supportProjectDescription": "PocketMindをご利用いただき楽しんでいただけているなら、以下の方法でプロジェクトを応援いただけると幸いです：",
     "githubButton": "GitHubでスターをつける",
     "orText": "または",
     "orBy": "または",
@@ -515,15 +515,15 @@
     "privacyPolicy": "プライバシーポリシー",
     "termsOfService": "利用規約",
     "tour": "ツアー",
-    "tourDescription": "ウェルカム画面をもう一度見て、PocketPal AIでできることを確認しましょう。",
+    "tourDescription": "ウェルカム画面をもう一度見て、PocketMindでできることを確認しましょう。",
     "showIntroButton": "イントロをもう一度見る"
   },
   "feedback": {
     "title": "フィードバックを送信",
-    "description": "ご意見をお聞かせください！PocketPal AIの使い心地やより便利にするためのアイデアをお寄せください",
+    "description": "ご意見をお聞かせください！PocketMindの使い心地やより便利にするためのアイデアをお寄せください",
     "shareThoughtsButton": "ご意見を共有する",
     "useCase": {
-      "label": "PocketPal AIをどのように使っていますか？",
+      "label": "PocketMindをどのように使っていますか？",
       "placeholder": "例：要約、ロールプレイなど"
     },
     "featureRequests": {
@@ -585,7 +585,7 @@
     },
     "chatEmptyPlaceholder": {
       "noModelsTitle": "利用可能なモデルがありません",
-      "noModelsDescription": "PocketPalとチャットを始めるにはモデルをダウンロードしてください",
+      "noModelsDescription": "PocketMindとチャットを始めるにはモデルをダウンロードしてください",
       "noModelsButton": "モデルをダウンロード",
       "activateModelTitle": "開始するにはモデルを有効化してください",
       "activateModelDescription": "モデルを選択してダウンロードしてください、ダウンロード後、モデルの横にある読み込みをタップしてチャットを開始します",
@@ -638,7 +638,7 @@
     },
     "modelErrorReportSheet": {
       "title": "モデル読み込みエラーを報告",
-      "privacyNote": "このエラーの詳細を共有してPocketPalの改善にご協力ください。以下の共有内容を確認し、含めたくない項目は選択解除できます。",
+      "privacyNote": "このエラーの詳細を共有してPocketMindの改善にご協力ください。以下の共有内容を確認し、含めたくない項目は選択解除できます。",
       "errorMessage": "エラーメッセージ",
       "modelInfo": "モデル情報",
       "modelName": "名前",
@@ -656,7 +656,7 @@
       "submit": "報告を送信",
       "success": {
         "title": "報告が送信されました",
-        "message": "PocketPalの改善にご協力いただきありがとうございます。この問題の修正に役立てます。"
+        "message": "PocketMindの改善にご協力いただきありがとうございます。この問題の修正に役立てます。"
       },
       "error": {
         "title": "報告に失敗しました",
@@ -1137,7 +1137,7 @@
   },
   "camera": {
     "permissionTitle": "カメラ許可が必要",
-    "permissionMessage": "PocketPalが画像を分析するにはカメラへのアクセスが必要です",
+    "permissionMessage": "PocketMindが画像を分析するにはカメラへのアクセスが必要です",
     "requestingPermission": "カメラの許可をリクエスト中...",
     "noDevice": "カメラデバイスが見つかりません",
     "errorTitle": "カメラエラー",
@@ -1151,7 +1151,7 @@
   },
   "video": {
     "permissionTitle": "カメラ許可が必要",
-    "permissionMessage": "PocketPalが動画を分析するにはカメラへのアクセスが必要です",
+    "permissionMessage": "PocketMindが動画を分析するにはカメラへのアクセスが必要です",
     "requestingPermission": "カメラの許可をリクエスト中...",
     "noDevice": "カメラデバイスが見つかりません",
     "errorTitle": "カメラエラー",
@@ -1497,14 +1497,14 @@
     "skip": "スキップ",
     "skipForNow": "今はスキップ",
     "splash": {
-      "brand": "PocketPal"
+      "brand": "PocketMind"
     },
     "screen1": {
       "title": "あなたのパルに会いましょう。",
       "titleAccent": "パルに。",
       "body": "あなたのスマホの中に住む、賢くて小さな友だち。\nセットアップを始めましょう。すぐに終わります。",
       "cta": "案内してもらう",
-      "eyebrow": "PocketPalへようこそ"
+      "eyebrow": "PocketMindへようこそ"
     },
     "screen2": {
       "title": "いつでも、\nどこでも。",

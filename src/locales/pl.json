@@ -169,7 +169,7 @@
     "languageSearchPlaceholder": "Wyszukaj języki",
     "internetSearch": {
       "title": "Wyszukiwanie w internecie",
-      "description": "Pozwól Kumplom przeszukiwać internet za pomocą własnych narzędzi. Użyj własnego klucza API - PocketPal nigdy nie przechowuje Twoich kluczy ani nie przekazuje Twoich zapytań.",
+      "description": "Pozwól Kumplom przeszukiwać internet za pomocą własnych narzędzi. Użyj własnego klucza API - PocketMind nigdy nie przechowuje Twoich kluczy ani nie przekazuje Twoich zapytań.",
       "providerLabel": "Dostawca wyszukiwania",
       "providerGated": "Wkrótce",
       "keyLabel": "Klucz API",
@@ -185,7 +185,7 @@
       "resultCountLabel": "Liczba wyników na wyszukiwanie",
       "resultCountDescription": "Mniej wyników zostawia więcej miejsca w kontekście modelu.",
       "consentTitle": "Wyszukiwania opuszczają Twoje urządzenie",
-      "consentDescription": "Gdy Kumpel przeszukuje internet, Twoje zapytanie jest wysyłane przez internet do wybranego dostawcy. Gdy Kumpel odczytuje stronę, jej adres URL i zawartość mogą zostać wysłane do domyślnej usługi odczytu (r.jina.ai), jeśli wybrany dostawca nie ma własnego mechanizmu odczytu. Klucze i zapytania nigdy nie są wysyłane do PocketPal.",
+      "consentDescription": "Gdy Kumpel przeszukuje internet, Twoje zapytanie jest wysyłane przez internet do wybranego dostawcy. Gdy Kumpel odczytuje stronę, jej adres URL i zawartość mogą zostać wysłane do domyślnej usługi odczytu (r.jina.ai), jeśli wybrany dostawca nie ma własnego mechanizmu odczytu. Klucze i zapytania nigdy nie są wysyłane do PocketMind.",
       "consentAccept": "Rozumiem",
       "consentRequired": "Zaakceptuj powyższą informację, aby ustawić klucz i włączyć wyszukiwanie.",
       "consentGivenTitle": "Wyszukiwanie w internecie jest włączone",
@@ -479,7 +479,7 @@
     "screenTitle": "Informacje o aplikacji",
     "description": "Aplikacja, która umożliwia działanie modeli językowych bezpośrednio na Twoim telefonie. Opiera się na bibliotekach llama.cpp i llama.rn.",
     "supportProject": "Wesprzyj Projekt",
-    "supportProjectDescription": "Jeśli podoba Ci się korzystanie z PocketPal AI, rozważ wsparcie projektu poprzez:",
+    "supportProjectDescription": "Jeśli podoba Ci się korzystanie z PocketMind, rozważ wsparcie projektu poprzez:",
     "githubButton": "Gwiazdkę na GitHub",
     "orText": "lub",
     "orBy": "bądź przez",
@@ -487,7 +487,7 @@
     "versionCopiedTitle": "Skopiowano wersję",
     "versionCopiedDescription": "Informacje o wersji zostały skopiowane do schowka",
     "tour": "Przewodnik",
-    "tourDescription": "Obejrzyj ponownie ekrany powitalne, aby zapoznać się z funkcjami PocketPal AI.",
+    "tourDescription": "Obejrzyj ponownie ekrany powitalne, aby zapoznać się z funkcjami PocketMind.",
     "showIntroButton": "Pokaż ponownie intro",
     "privacyPolicy": "Polityka Prywatności",
     "termsOfService": "Warunki korzystania z usługi"
@@ -500,7 +500,7 @@
         "daily": "Dziennie",
         "weekly": "Co tydzień"
       },
-      "label": "Jak często korzystasz z PocketPal AI? (Opcjonalnie)"
+      "label": "Jak często korzystasz z PocketMind? (Opcjonalnie)"
     },
     "email": {
       "label": "Adres e-mail do kontaktu (opcjonalnie)",
@@ -514,10 +514,10 @@
     "error": {
       "general": "Wystąpił błąd podczas wysyłania opinii. Spróbuj ponownie."
     },
-    "description": "Twoja opinia ma znaczenie! Powiedz nam, w jaki sposób PocketPal AI pomaga Ci w codziennym życiu i co możemy zrobić, aby ta aplikacja była jeszcze bardziej przydatna.",
+    "description": "Twoja opinia ma znaczenie! Powiedz nam, w jaki sposób PocketMind pomaga Ci w codziennym życiu i co możemy zrobić, aby ta aplikacja była jeszcze bardziej przydatna.",
     "shareThoughtsButton": "Podziel się swoimi przemyśleniami",
     "useCase": {
-      "label": "Do czego wykorzystujesz PocketPal AI?",
+      "label": "Do czego wykorzystujesz PocketMind?",
       "placeholder": "np. streszczanie, odgrywanie ról itp."
     },
     "featureRequests": {
@@ -605,7 +605,7 @@
     },
     "modelErrorReportSheet": {
       "title": "Zgłoś Problem z Ładowaniem Modelu",
-      "privacyNote": "Pomóż nam ulepszyć PocketPal, przekazując szczegóły dotyczące tego błędu. Poniżej znajdziesz listę informacji, które zostaną udostępnione - możesz odznaczyć te pozycje, których nie chcesz ujawniać.",
+      "privacyNote": "Pomóż nam ulepszyć PocketMind, przekazując szczegóły dotyczące tego błędu. Poniżej znajdziesz listę informacji, które zostaną udostępnione - możesz odznaczyć te pozycje, których nie chcesz ujawniać.",
       "errorMessage": "Komunikat o błędzie",
       "modelInfo": "Informacje o Modelu",
       "modelName": "Nazwa",
@@ -623,7 +623,7 @@
       "submit": "Złóż Raport",
       "success": {
         "title": "Raport Złożony",
-        "message": "Dziękujemy za pomoc w ulepszaniu aplikacji PocketPal. Twoje zgłoszenie pomoże nam rozwiązać ten problem."
+        "message": "Dziękujemy za pomoc w ulepszaniu aplikacji PocketMind. Twoje zgłoszenie pomoże nam rozwiązać ten problem."
       },
       "error": {
         "title": "Błąd Zgłoszenia",
@@ -825,7 +825,7 @@
       "gettingReadyTitle": "{{name}} przygotowuje się",
       "gettingReadyDescription": "Poinformujemy Cię, gdy tylko Twój kumpel będzie mógł rozpocząć czat. Kliknij baner u góry, aby sprawdzić, jak mu idzie.",
       "noModelsTitle": "Brak Dostępnych Modeli",
-      "noModelsDescription": "Pobierz model, aby rozpocząć rozmowę w PocketPal",
+      "noModelsDescription": "Pobierz model, aby rozpocząć rozmowę w PocketMind",
       "noModelsButton": "Pobierz Model",
       "activateModelTitle": "Aktywuj model, aby rozpocząć",
       "activateModelDescription": "Wybierz model i pobierz go. Po zakończeniu pobierania dotknij opcji „Załaduj\" obok modelu i rozpocznij rozmowę."
@@ -1111,7 +1111,7 @@
   },
   "camera": {
     "permissionTitle": "Dostęp do Aparatu Wymagany",
-    "permissionMessage": "Aplikacja PocketPal potrzebuje dostępu do aparatu, aby analizować zdjęcia",
+    "permissionMessage": "Aplikacja PocketMind potrzebuje dostępu do aparatu, aby analizować zdjęcia",
     "requestingPermission": "Prośba o zgodę na dostęp do aparatu...",
     "noDevice": "Nie znaleziono żadnego aparatu",
     "errorTitle": "Błąd Aparatu",
@@ -1125,7 +1125,7 @@
   },
   "video": {
     "permissionTitle": "Dostęp do Aparatu Wymagany",
-    "permissionMessage": "Aplikacja PocketPal potrzebuje dostępu do aparatu w celu analizy wideo",
+    "permissionMessage": "Aplikacja PocketMind potrzebuje dostępu do aparatu w celu analizy wideo",
     "requestingPermission": "Prośba o dostęp do aparatu...",
     "noDevice": "Nie znaleziono aparatu",
     "errorTitle": "Błąd Aparatu",
@@ -1440,14 +1440,14 @@
     "skip": "Pomiń",
     "skipForNow": "Na razie pomiń",
     "splash": {
-      "brand": "PocketPal"
+      "brand": "PocketMind"
     },
     "screen1": {
       "title": "Poznaj swoich kumpli.",
       "titleAccent": "kumple.",
       "body": "Sprytni mali przyjaciele, którzy mieszkają w Twoim telefonie.\nZacznijmy konfigurację - to zajmie tylko chwilę.",
       "cta": "Oprowadź mnie",
-      "eyebrow": "Witaj w PocketPal"
+      "eyebrow": "Witaj w PocketMind"
     },
     "screen3": {
       "cta": "Rozumiem",

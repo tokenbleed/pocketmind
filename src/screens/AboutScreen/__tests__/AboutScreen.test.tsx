@@ -1,12 +1,11 @@
 import React from 'react';
-import {Alert, Linking, Platform} from 'react-native';
+import {Alert, Linking} from 'react-native';
 import {
   render as baseRender,
   fireEvent,
   act,
 } from '../../../../jest/test-utils';
 import {AboutScreen} from '../AboutScreen';
-import {submitFeedback} from '../../../api/feedback';
 import {l10n} from '../../../locales';
 
 const render = (ui: React.ReactElement, options: any = {}) =>
@@ -27,11 +26,6 @@ jest.mock('@react-native-clipboard/clipboard', () => ({
 const mockOpenURL = jest.fn().mockImplementation(() => Promise.resolve());
 jest.spyOn(Linking, 'openURL').mockImplementation(mockOpenURL);
 
-// Mock feedback API
-jest.mock('../../../api/feedback', () => ({
-  submitFeedback: jest.fn().mockResolvedValue(undefined),
-}));
-
 jest.spyOn(Alert, 'alert');
 
 describe('AboutScreen', () => {
@@ -42,7 +36,7 @@ describe('AboutScreen', () => {
   it('renders correctly', () => {
     const {getByText} = render(<AboutScreen />);
 
-    expect(getByText('PocketPal AI')).toBeTruthy();
+    expect(getByText('PocketMind')).toBeTruthy();
     expect(getByText('v1.0.0 (100)')).toBeTruthy();
     expect(getByText(l10n.en.about.supportProject)).toBeTruthy();
     expect(getByText(l10n.en.about.githubButton)).toBeTruthy();
@@ -65,26 +59,8 @@ describe('AboutScreen', () => {
     fireEvent.press(getByText('Star on GitHub'));
 
     expect(Linking.openURL).toHaveBeenCalledWith(
-      'https://github.com/a-ghorbani/pocketpal-ai',
+      'https://github.com/tokenbleed/pocketmind',
     );
-  });
-
-  it('opens Buy Me a Coffee URL when sponsor button is pressed on non-iOS platforms', () => {
-    Platform.OS = 'android';
-    const {getByText} = render(<AboutScreen />);
-
-    fireEvent.press(getByText(l10n.en.about.sponsorButton));
-
-    expect(Linking.openURL).toHaveBeenCalledWith(
-      'https://www.buymeacoffee.com/aghorbani',
-    );
-  });
-
-  it('does not show sponsor button on iOS', () => {
-    Platform.OS = 'ios';
-    const {queryByText} = render(<AboutScreen />);
-
-    expect(queryByText(l10n.en.about.sponsorButton)).toBeNull();
   });
 
   it('opens feedback form when share thoughts button is pressed', async () => {
@@ -138,17 +114,16 @@ describe('AboutScreen', () => {
       fireEvent.press(submitButton);
     });
 
-    expect(submitFeedback).toHaveBeenCalledWith({
-      useCase: 'Test use case',
-      featureRequests: 'Test feature request',
-      generalFeedback: 'Test feedback',
-      usageFrequency: 'daily',
-    });
-
-    expect(Alert.alert).toHaveBeenCalledWith(
-      'Success',
-      'Thank you for your feedback!',
+    expect(Linking.openURL).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'https://github.com/tokenbleed/pocketmind/issues/new',
+      ),
     );
+    const calledUrl = mockOpenURL.mock.calls[0][0] as string;
+    expect(decodeURIComponent(calledUrl)).toContain('Test use case');
+    expect(decodeURIComponent(calledUrl)).toContain('Test feature request');
+    expect(decodeURIComponent(calledUrl)).toContain('Test feedback');
+    expect(decodeURIComponent(calledUrl)).toContain('daily');
   });
 
   it('shows validation error when submitting empty feedback', async () => {
@@ -166,11 +141,13 @@ describe('AboutScreen', () => {
     expect(Alert.alert).toHaveBeenCalledWith(
       l10n.en.feedback.validation.required,
     );
-    expect(submitFeedback).not.toHaveBeenCalled();
+    expect(Linking.openURL).not.toHaveBeenCalledWith(
+      expect.stringContaining('/issues/new'),
+    );
   });
 
   it('handles feedback submission error', async () => {
-    (submitFeedback as jest.Mock).mockRejectedValueOnce(new Error('API Error'));
+    mockOpenURL.mockRejectedValueOnce(new Error('API Error'));
 
     const {getByText, findByText, findByPlaceholderText} = render(
       <AboutScreen />,
@@ -191,6 +168,9 @@ describe('AboutScreen', () => {
       fireEvent.press(submitButton);
     });
 
-    expect(Alert.alert).toHaveBeenCalledWith('Error', 'API Error');
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Error',
+      'Error sending feedback. Please try again.',
+    );
   });
 });

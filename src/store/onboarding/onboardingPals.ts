@@ -3,7 +3,7 @@
  * three model tiers each. `else` falls back to the Pip (smartchat) pal.
  *
  * The Balanced tier is universally `recommended: true` for now; a
- * future device-aware tier picker (pocketpal-device-rules) will adjust
+ * future device-aware tier picker (device rules overlay in this repo) will adjust
  * this per phone. Until then, the same tier is pre-selected on every
  * device.
  *

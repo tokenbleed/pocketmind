@@ -1,12 +1,5 @@
 import React, {useState, useContext} from 'react';
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  Linking,
-  Platform,
-} from 'react-native';
+import {View, ScrollView, TouchableOpacity, Alert, Linking} from 'react-native';
 
 import DeviceInfo from 'react-native-device-info';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -14,14 +7,7 @@ import {Text, Button, SegmentedButtons} from 'react-native-paper';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {BuildInfo} from 'llama.rn';
 
-import {submitFeedback} from '../../api/feedback';
-
-import {
-  CopyIcon,
-  GithubIcon,
-  ChevronRightIcon,
-  HeartIcon,
-} from '../../assets/icons';
+import {CopyIcon, GithubIcon, ChevronRightIcon} from '../../assets/icons';
 
 import {Sheet, TextInput} from '../../components';
 import {useTheme} from '../../hooks';
@@ -53,7 +39,6 @@ export const AboutScreen: React.FC = () => {
   const [featureRequests, setFeatureRequests] = useState('');
   const [generalFeedback, setGeneralFeedback] = useState('');
   const [usageFrequency, setUsageFrequency] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   React.useEffect(() => {
     const version = DeviceInfo.getVersion();
@@ -79,27 +64,31 @@ export const AboutScreen: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    // No backend: feedback lands as a prefilled GitHub issue the user
+    // reviews and submits themselves.
+    const body = [
+      useCase && `**Use case:** ${useCase}`,
+      featureRequests && `**Feature requests:** ${featureRequests}`,
+      generalFeedback && `**Feedback:** ${generalFeedback}`,
+      usageFrequency && `**Usage frequency:** ${usageFrequency}`,
+      `**App version:** ${appInfo.version} (${appInfo.build})`,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+    const issueUrl = `https://github.com/tokenbleed/pocketmind/issues/new?title=${encodeURIComponent(
+      'App feedback',
+    )}&body=${encodeURIComponent(body)}`;
+
     try {
-      await submitFeedback({
-        useCase,
-        featureRequests,
-        generalFeedback,
-        usageFrequency,
-      });
-      Alert.alert('Success', l10n.feedback.success);
+      await Linking.openURL(issueUrl);
       setShowFeedback(false);
       // Clear form
       setUseCase('');
       setFeatureRequests('');
       setGeneralFeedback('');
       setUsageFrequency('');
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : l10n.feedback.error.general;
-      Alert.alert('Error', errorMessage);
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      Alert.alert('Error', l10n.feedback.error.general);
     }
   };
 
@@ -110,7 +99,7 @@ export const AboutScreen: React.FC = () => {
           <View style={styles.header}>
             <View style={styles.headerContent}>
               <Text variant="titleLarge" style={styles.title}>
-                PocketPal AI
+                PocketMind
               </Text>
               <Text variant="bodyMedium" style={styles.description}>
                 {l10n.about.description}
@@ -144,27 +133,12 @@ export const AboutScreen: React.FC = () => {
             <Button
               mode="outlined"
               onPress={() =>
-                Linking.openURL('https://github.com/a-ghorbani/pocketpal-ai')
+                Linking.openURL('https://github.com/tokenbleed/pocketmind')
               }
               style={styles.actionButton}
               icon={GithubButtonIcon}>
               {l10n.about.githubButton}
             </Button>
-            {Platform.OS !== 'ios' && (
-              <>
-                <Text style={styles.orText}>{l10n.about.orText}</Text>
-                <TouchableOpacity
-                  style={styles.supportButton}
-                  onPress={() =>
-                    Linking.openURL('https://www.buymeacoffee.com/aghorbani')
-                  }>
-                  <HeartIcon stroke={theme.colors.onPrimary} />
-                  <Text style={styles.supportButtonText}>
-                    {l10n.about.sponsorButton}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            )}
             <Text style={styles.orText}>{l10n.about.orBy}</Text>
             <Button
               mode="outlined"
@@ -194,14 +168,20 @@ export const AboutScreen: React.FC = () => {
             <Text
               style={styles.legalLink}
               onPress={() =>
-                Linking.openURL('https://pocketpal.dev/privacy-policy')
+                Linking.openURL(
+                  'https://github.com/tokenbleed/pocketmind/blob/main/PRIVACY.md',
+                )
               }>
               {l10n.about.privacyPolicy}
             </Text>
             <Text style={styles.legalSeparator}>·</Text>
             <Text
               style={styles.legalLink}
-              onPress={() => Linking.openURL('https://pocketpal.dev/terms')}>
+              onPress={() =>
+                Linking.openURL(
+                  'https://github.com/tokenbleed/pocketmind/blob/main/TERMS.md',
+                )
+              }>
               {l10n.about.termsOfService}
             </Text>
           </View>
@@ -286,11 +266,7 @@ export const AboutScreen: React.FC = () => {
               {l10n.common.cancel}
             </Button>
           </View>
-          <Button
-            mode="contained"
-            onPress={handleSubmit}
-            loading={isSubmitting}
-            disabled={isSubmitting}>
+          <Button mode="contained" onPress={handleSubmit}>
             {l10n.feedback.submit}
           </Button>
         </Sheet.Actions>

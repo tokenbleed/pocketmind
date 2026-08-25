@@ -67,13 +67,15 @@ If your changes affect the app's behavior, ensure you include or update tests as
 
 ### Translations (Localization)
 
-PocketPal uses [Weblate](https://hosted.weblate.org/translate/pocketpal-ai) for managing translations. When adding or changing user-facing strings:
+User-facing strings live in `src/locales/`. When adding or changing strings:
 
-- **Only edit `src/locales/en.json`** (the English source file). Do not edit `ja.json`, `zh.json`, or other language files directly - they are managed by translators through Weblate and will be overwritten.
-- Use `{{placeholder}}` syntax (double braces) for dynamic values, e.g. `"Imported {{count}} sessions"`.
-- Run `yarn l10n:validate` to check that your JSON is valid and placeholders are consistent.
-
-**To contribute translations**, visit [PocketPal on Weblate](https://hosted.weblate.org/translate/pocketpal-ai) - no code changes needed.
+- **Edit `src/locales/en.json`** (the English source file) and carry the
+  same key changes into the other locale files you can translate. Other
+  languages are community-maintained directly in this repo.
+- Use `{{placeholder}}` syntax (double braces) for dynamic values, e.g.
+  `"Imported {{count}} sessions"`.
+- Run `yarn l10n:validate` to check that your JSON is valid and placeholders
+  are consistent.
 
 ### Commit Message Guidelines
 

@@ -167,7 +167,7 @@
     "serverTypeHelp": "Terdeteksi otomatis; ubah jika keliru.",
     "internetSearch": {
       "title": "Pencarian Internet",
-      "description": "Biarkan Pals mencari di web dengan alat mereka sendiri. Bawa Kunci API Anda sendiri - PocketPal tidak pernah menyimpan kunci atau meneruskan kueri Anda.",
+      "description": "Biarkan Pals mencari di web dengan alat mereka sendiri. Bawa Kunci API Anda sendiri - PocketMind tidak pernah menyimpan kunci atau meneruskan kueri Anda.",
       "providerLabel": "Penyedia Pencarian",
       "providerGated": "Segera hadir",
       "keyLabel": "Kunci API",
@@ -183,7 +183,7 @@
       "resultCountLabel": "Hasil per Pencarian",
       "resultCountDescription": "Semakin sedikit hasil, semakin banyak ruang tersisa di konteks model.",
       "consentTitle": "Pencarian meninggalkan perangkat Anda",
-      "consentDescription": "Saat sebuah Pal mencari di web, kueri Anda dikirim ke penyedia yang dipilih melalui internet. Saat sebuah Pal membaca halaman, URL dan konten halaman mungkin dikirim ke layanan pembaca default (r.jina.ai) jika penyedia yang dipilih tidak memiliki pembaca bawaan. Kunci dan kueri tidak pernah dikirim ke PocketPal.",
+      "consentDescription": "Saat sebuah Pal mencari di web, kueri Anda dikirim ke penyedia yang dipilih melalui internet. Saat sebuah Pal membaca halaman, URL dan konten halaman mungkin dikirim ke layanan pembaca default (r.jina.ai) jika penyedia yang dipilih tidak memiliki pembaca bawaan. Kunci dan kueri tidak pernah dikirim ke PocketMind.",
       "consentAccept": "Saya mengerti",
       "consentRequired": "Setujui pemberitahuan di atas untuk mengatur kunci dan mengaktifkan pencarian.",
       "consentGivenTitle": "Pencarian web diaktifkan",
@@ -505,7 +505,7 @@
     "screenTitle": "Info Aplikasi",
     "description": "Aplikasi yang membawa model bahasa langsung ke ponsel Anda. Dibangun di atas llama.cpp dan llama.rn.",
     "supportProject": "Dukung Proyek Ini",
-    "supportProjectDescription": "Jika Anda menikmati menggunakan PocketPal AI, pertimbangkan untuk mendukung proyek ini dengan:",
+    "supportProjectDescription": "Jika Anda menikmati menggunakan PocketMind, pertimbangkan untuk mendukung proyek ini dengan:",
     "githubButton": "Beri Bintang di GitHub",
     "orText": "atau",
     "orBy": "atau dengan",
@@ -515,15 +515,15 @@
     "privacyPolicy": "Kebijakan Privasi",
     "termsOfService": "Ketentuan Layanan",
     "tour": "Tur",
-    "tourDescription": "Putar ulang layar selamat datang untuk melihat apa yang ditawarkan PocketPal AI.",
+    "tourDescription": "Putar ulang layar selamat datang untuk melihat apa yang ditawarkan PocketMind.",
     "showIntroButton": "Tampilkan intro lagi"
   },
   "feedback": {
     "title": "Kirim Masukan",
-    "description": "Suara Anda penting! Ceritakan bagaimana PocketPal AI membantu Anda dan apa yang bisa kami lakukan agar lebih bermanfaat.",
+    "description": "Suara Anda penting! Ceritakan bagaimana PocketMind membantu Anda dan apa yang bisa kami lakukan agar lebih bermanfaat.",
     "shareThoughtsButton": "Bagikan pikiran Anda",
     "useCase": {
-      "label": "Untuk apa Anda menggunakan PocketPal AI?",
+      "label": "Untuk apa Anda menggunakan PocketMind?",
       "placeholder": "misalnya, merangkum, bermain peran, dll."
     },
     "featureRequests": {
@@ -535,7 +535,7 @@
       "placeholder": "Bagikan pikiran lain yang Anda miliki."
     },
     "usageFrequency": {
-      "label": "Seberapa sering Anda menggunakan PocketPal AI? (Opsional)",
+      "label": "Seberapa sering Anda menggunakan PocketMind? (Opsional)",
       "options": {
         "daily": "Setiap hari",
         "weekly": "Mingguan",
@@ -585,7 +585,7 @@
     },
     "chatEmptyPlaceholder": {
       "noModelsTitle": "Tidak Ada Model Tersedia",
-      "noModelsDescription": "Unduh model untuk mulai mengobrol dengan PocketPal",
+      "noModelsDescription": "Unduh model untuk mulai mengobrol dengan PocketMind",
       "noModelsButton": "Unduh Model",
       "activateModelTitle": "Aktifkan Model untuk Memulai",
       "activateModelDescription": "Pilih model dan unduh. Setelah diunduh, ketuk Muat di sebelah model dan mulai mengobrol.",
@@ -638,7 +638,7 @@
     },
     "modelErrorReportSheet": {
       "title": "Laporkan Masalah Pemuatan Model",
-      "privacyNote": "Bantu kami meningkatkan PocketPal dengan membagikan detail tentang kesalahan ini. Tinjau di bawah ini apa yang akan dibagikan - Anda dapat membatalkan item apa pun yang tidak ingin disertakan.",
+      "privacyNote": "Bantu kami meningkatkan PocketMind dengan membagikan detail tentang kesalahan ini. Tinjau di bawah ini apa yang akan dibagikan - Anda dapat membatalkan item apa pun yang tidak ingin disertakan.",
       "errorMessage": "Pesan kesalahan",
       "modelInfo": "Informasi Model",
       "modelName": "Nama",
@@ -656,7 +656,7 @@
       "submit": "Kirim Laporan",
       "success": {
         "title": "Laporan Dikirim",
-        "message": "Terima kasih telah membantu kami meningkatkan PocketPal. Laporan Anda akan membantu kami memperbaiki masalah ini."
+        "message": "Terima kasih telah membantu kami meningkatkan PocketMind. Laporan Anda akan membantu kami memperbaiki masalah ini."
       },
       "error": {
         "title": "Gagal Mengirim Laporan",
@@ -1137,7 +1137,7 @@
   },
   "camera": {
     "permissionTitle": "Izin Kamera Diperlukan",
-    "permissionMessage": "PocketPal memerlukan akses kamera untuk menganalisis gambar",
+    "permissionMessage": "PocketMind memerlukan akses kamera untuk menganalisis gambar",
     "requestingPermission": "Meminta izin kamera...",
     "noDevice": "Tidak ditemukan perangkat kamera",
     "errorTitle": "Kesalahan Kamera",
@@ -1151,7 +1151,7 @@
   },
   "video": {
     "permissionTitle": "Izin Kamera Diperlukan",
-    "permissionMessage": "PocketPal memerlukan akses kamera untuk analisis video",
+    "permissionMessage": "PocketMind memerlukan akses kamera untuk analisis video",
     "requestingPermission": "Meminta izin kamera...",
     "noDevice": "Tidak ditemukan perangkat kamera",
     "errorTitle": "Kesalahan Kamera",
@@ -1497,14 +1497,14 @@
     "skip": "Lewati",
     "skipForNow": "Lewati untuk sekarang",
     "splash": {
-      "brand": "PocketPal"
+      "brand": "PocketMind"
     },
     "screen1": {
       "title": "Temui para pal Anda.",
       "titleAccent": "pal.",
       "body": "Teman-teman kecil pintar yang tinggal di dalam ponsel Anda.\nMari kita siapkan - akan memakan waktu sebentar.",
       "cta": "Ajak Berkeliling",
-      "eyebrow": "Selamat Datang di PocketPal"
+      "eyebrow": "Selamat Datang di PocketMind"
     },
     "screen2": {
       "title": "Kapan Saja,\nDi Mana Saja.",

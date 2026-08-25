@@ -3,7 +3,7 @@
     "screenTitle": "應用程式資訊",
     "description": "一個能把語言模型直接帶到你手機上的應用程式，基於 llama.cpp 與 llama.rn 構建。",
     "supportProject": "支援此專案",
-    "supportProjectDescription": "如果您喜歡使用 PocketPal AI，請考慮透過以下方式支援此專案：",
+    "supportProjectDescription": "如果您喜歡使用 PocketMind，請考慮透過以下方式支援此專案：",
     "githubButton": "在 GitHub 上點讚",
     "orText": "或",
     "orBy": "或通過",
@@ -12,7 +12,7 @@
     "versionCopiedDescription": "版本資訊已複製至剪貼板",
     "privacyPolicy": "隱私權政策",
     "termsOfService": "服務條款",
-    "tourDescription": "重播歡迎畫面，以查看 PocketPal AI 提供的功能。",
+    "tourDescription": "重播歡迎畫面，以查看 PocketMind 提供的功能。",
     "showIntroButton": "再次顯示介紹",
     "tour": "導覽"
   },
@@ -284,7 +284,7 @@
     },
     "chatEmptyPlaceholder": {
       "noModelsTitle": "無可用模型",
-      "noModelsDescription": "下載模型後即可開始使用 PocketPal 進行聊天",
+      "noModelsDescription": "下載模型後即可開始使用 PocketMind 進行聊天",
       "noModelsButton": "下載模型",
       "activateModelTitle": "啟動模型以開始",
       "activateModelDescription": "請先選擇模型並下載。下載完成後，點擊模型右側的「載入」按鈕即可開始對話。",
@@ -549,7 +549,7 @@
       "modelSize": "大小",
       "errorMessage": "錯誤訊息",
       "title": "報告模型載入問題",
-      "privacyNote": "請分享有關此錯誤的細節，以幫助我們改進 PocketPal。以下列出將會分享的內容 - 您可以選擇不包含任何您不希望包含的項目。",
+      "privacyNote": "請分享有關此錯誤的細節，以幫助我們改進 PocketMind。以下列出將會分享的內容 - 您可以選擇不包含任何您不希望包含的項目。",
       "contextParams": "上下文參數",
       "deviceInfo": "裝置資訊",
       "deviceModel": "裝置",
@@ -560,7 +560,7 @@
       "submit": "提交報告",
       "success": {
         "title": "報告已提交",
-        "message": "感謝您協助我們改進 PocketPal。您的報告將有助於我們解決此問題。"
+        "message": "感謝您協助我們改進 PocketMind。您的報告將有助於我們解決此問題。"
       },
       "error": {
         "title": "報告失敗",
@@ -762,10 +762,10 @@
   },
   "feedback": {
     "title": "送出反饋",
-    "description": "請讓我們聽見您的心聲！告訴我們 PocketPal AI 對您的幫助，以及我們該如何進一步提升實用性。",
+    "description": "請讓我們聽見您的心聲！告訴我們 PocketMind 對您的幫助，以及我們該如何進一步提升實用性。",
     "shareThoughtsButton": "分享您的想法",
     "useCase": {
-      "label": "您正在使用 PocketPal AI 做什麼？",
+      "label": "您正在使用 PocketMind 做什麼？",
       "placeholder": "例如：摘要、角色扮演等。"
     },
     "featureRequests": {
@@ -777,7 +777,7 @@
       "placeholder": "分享您可能有的其他想法。"
     },
     "usageFrequency": {
-      "label": "您多久使用一次 PocketPal AI？（可選）",
+      "label": "您多久使用一次 PocketMind？（可選）",
       "options": {
         "daily": "每日",
         "weekly": "每週",
@@ -1200,7 +1200,7 @@
     "serverTypeHelp": "自動偵測；若有誤請修改。",
     "internetSearch": {
       "title": "網路搜尋",
-      "description": "讓 Pals 用自己的工具搜尋網路。請自備 API 金鑰 - PocketPal 絕不會保存你的金鑰，也不會轉送你的查詢。",
+      "description": "讓 Pals 用自己的工具搜尋網路。請自備 API 金鑰 - PocketMind 絕不會保存你的金鑰，也不會轉送你的查詢。",
       "providerLabel": "搜尋服務供應商",
       "providerGated": "即將推出",
       "keyLabel": "API 金鑰",
@@ -1216,7 +1216,7 @@
       "resultCountLabel": "每次搜尋的結果數",
       "resultCountDescription": "結果越少，模型的上下文就能保留更多空間。",
       "consentTitle": "搜尋會離開你的裝置",
-      "consentDescription": "當 Pal 搜尋網路時，你的查詢會透過網際網路傳送給所選的供應商。當 Pal 讀取網頁時，若所選供應商沒有內建的閱讀器，網址與頁面內容可能會改為傳送給預設的閱讀器服務（r.jina.ai）。金鑰與查詢絕不會傳送給 PocketPal。",
+      "consentDescription": "當 Pal 搜尋網路時，你的查詢會透過網際網路傳送給所選的供應商。當 Pal 讀取網頁時，若所選供應商沒有內建的閱讀器，網址與頁面內容可能會改為傳送給預設的閱讀器服務（r.jina.ai）。金鑰與查詢絕不會傳送給 PocketMind。",
       "consentAccept": "我了解",
       "consentRequired": "請接受上方的說明，以設定金鑰並啟用搜尋。",
       "consentGivenTitle": "網路搜尋已啟用",
@@ -1282,7 +1282,7 @@
     "stopCamera": "停止相機",
     "errorTitle": "相機錯誤",
     "permissionTitle": "需要相機權限",
-    "permissionMessage": "PocketPal 需要使用相機，以便進行影片分析",
+    "permissionMessage": "PocketMind 需要使用相機，以便進行影片分析",
     "requestingPermission": "請求相機權限中...",
     "noDevice": "未偵測到相機裝置",
     "errorMessage": "相機發生錯誤",
@@ -1309,7 +1309,7 @@
     "startCamera": "啟動相機",
     "stopCamera": "停止相機",
     "permissionTitle": "需要相機權限",
-    "permissionMessage": "PocketPal 需要存取相機，以分析影像",
+    "permissionMessage": "PocketMind 需要存取相機，以分析影像",
     "requestingPermission": "請求相機權限中...",
     "noDevice": "未偵測到相機裝置",
     "errorMessage": "拍攝照片時發生錯誤",
@@ -1529,14 +1529,14 @@
       "deviceFreeSuffix": "GB 剩餘空間"
     },
     "splash": {
-      "brand": "PocketPal"
+      "brand": "PocketMind"
     },
     "screen1": {
       "title": "認識您的 pal。",
       "titleAccent": "pal。",
       "body": "住在您手機裡的聰明小夥伴。\n讓我們開始設定吧--只需花一點時間即可。",
       "cta": "帶我導覽",
-      "eyebrow": "歡迎來到 PocketPal"
+      "eyebrow": "歡迎來到 PocketMind"
     },
     "screen2": {
       "title": "隨時，\n隨地。",

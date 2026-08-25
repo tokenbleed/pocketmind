@@ -4,7 +4,7 @@
  * referencing outer variables); tests reach its state via __workspace.
  */
 jest.mock('@dr.pogodin/react-native-fs', () => {
-  const ROOT = '/data/user/0/com.pocketpalai/files';
+  const ROOT = '/data/user/0/io.github.tokenbleed.pocketmind/files';
   const WORKSPACE = `${ROOT}/workspace`;
   const files = new Map<string, string>();
   const dirs = new Set<string>();

@@ -1,18 +1,23 @@
-import * as RNFS from '@dr.pogodin/react-native-fs';
-
 import type {
   TalentEngine,
   TalentResult,
   ToolDefinition,
   SystemPromptContext,
 } from './types';
-import {MAX_WRITE_CHARS, ensureDir, resolveWorkspacePath} from './workspaceFs';
+import {
+  MAX_WRITE_CHARS,
+  getMountedDeviceDir,
+  resolveWorkspacePath,
+} from './workspaceFs';
+import {talentWriteText} from './talentFs';
+import {parseRoot, rootArgSchema} from './ReadFileEngine';
 
 export class WriteFileEngine implements TalentEngine {
   readonly name = 'write_file';
 
   async execute(args: Record<string, any>): Promise<TalentResult> {
-    const jail = resolveWorkspacePath(args?.path);
+    const root = parseRoot(args?.root);
+    const jail = resolveWorkspacePath(args?.path, root);
     if (!jail.ok) {
       return {
         type: 'error',
@@ -24,7 +29,7 @@ export class WriteFileEngine implements TalentEngine {
       return {
         type: 'error',
         summary: 'write_file: path is required',
-        errorMessage: 'cannot write the workspace root; name a file',
+        errorMessage: 'cannot write the root; name a file',
       };
     }
     if (typeof args?.content !== 'string') {
@@ -41,26 +46,21 @@ export class WriteFileEngine implements TalentEngine {
         errorMessage: `content exceeds the ${MAX_WRITE_CHARS} character cap`,
       };
     }
+    if (jail.kind === 'device' && !jail.writable) {
+      return {
+        type: 'error',
+        summary: 'write_file: the device directory is mounted read-only',
+        errorMessage:
+          'the user has not enabled write access for the granted directory; ' +
+          'ask them to enable it in Settings, or write to the workspace root',
+      };
+    }
 
     const append = args?.append === true;
 
-    // Parent directory of the jailed path, lexically.
-    const parentAbs = jail.abs.slice(0, jail.abs.lastIndexOf('/'));
-
     try {
-      await ensureDir(parentAbs);
-      if (append) {
-        await RNFS.appendFile(jail.abs, args.content, 'utf8');
-      } else {
-        await RNFS.writeFile(jail.abs, args.content, 'utf8');
-      }
-      let sizeNote = '';
-      try {
-        const info = await RNFS.stat(jail.abs);
-        sizeNote = ` (now ${info.size ?? args.content.length} bytes)`;
-      } catch {
-        // stat is cosmetic; the write itself already succeeded.
-      }
+      const size = await talentWriteText(jail, args.content, append);
+      const sizeNote = typeof size === 'number' ? ` (now ${size} bytes)` : '';
       return {
         type: 'text',
         summary: `${append ? 'appended' : 'wrote'} ${args.content.length} chars to ${jail.rel}${sizeNote}`,
@@ -76,9 +76,16 @@ export class WriteFileEngine implements TalentEngine {
   }
 
   systemPromptFragment(_ctx: SystemPromptContext): string {
+    const mount = getMountedDeviceDir();
+    const mountNote = mount
+      ? ` A device directory ("${mount.name}") is mounted as root "device" and is currently ${
+          mount.writable ? 'writable' : 'read-only for write_file'
+        }.`
+      : '';
     return (
-      'write_file(path, content, append?) writes (or, with append: true, appends to) a ' +
-      'text file in the workspace; missing directories are created automatically.'
+      'write_file(path, content, append?, root?) writes (or, with append: true, ' +
+      'appends to) a text file; missing directories are created automatically. ' +
+      `root selects the private workspace (default) or "device".${mountNote}`
     );
   }
 
@@ -88,18 +95,20 @@ export class WriteFileEngine implements TalentEngine {
       function: {
         name: 'write_file',
         description:
-          'Write or append a text file inside the private workspace directory.',
+          'Write or append a text file. Defaults to the private workspace; pass root:"device" for the user-granted directory (only when the user enabled write access).',
         parameters: {
           type: 'object',
           properties: {
             path: {
               type: 'string',
-              description: 'File path relative to the workspace root.',
+              description:
+                'File path relative to the selected root (workspace sandbox or granted directory).',
             },
             content: {
               type: 'string',
               description: 'Full file content, or the text to append.',
             },
+            root: rootArgSchema(),
             append: {
               type: 'boolean',
               description:

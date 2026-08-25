@@ -19,38 +19,73 @@ import * as RNFS from '@dr.pogodin/react-native-fs';
  */
 export const WORKSPACE_DIR_NAME = 'workspace';
 
+/** Which filesystem root a talent path resolves against. 'workspace' is
+ *  the app-private sandbox (default, always present); 'device' is a
+ *  user-granted directory via the system picker, present only while a
+ *  persisted SAF grant is mounted (see AgentFsStore). */
+export type WorkspaceRootKind = 'workspace' | 'device';
+
+export interface MountedDeviceDir {
+  /** Persisted SAF tree URI (content://...). */
+  treeUri: string;
+  /** Human-readable directory name for prompts and settings. */
+  name: string;
+  /** Whether write_file may target this root. Read-only by default. */
+  writable: boolean;
+}
+
+/** Module-level mount state, synced from AgentFsStore. Read by the jail
+ *  and by system-prompt fragments at message-assembly time; the engines
+ *  stay free of store imports (same pattern as readUrlAllowlist). */
+let mountedDeviceDir: MountedDeviceDir | null = null;
+
+export function setMountedDeviceDir(mount: MountedDeviceDir | null): void {
+  mountedDeviceDir = mount;
+}
+
+export function getMountedDeviceDir(): MountedDeviceDir | null {
+  return mountedDeviceDir;
+}
+
 export function workspaceRoot(): string {
   return `${RNFS.DocumentDirectoryPath}/${WORKSPACE_DIR_NAME}`;
 }
 
 export type JailResult =
-  | {ok: true; abs: string; rel: string}
+  | {ok: true; kind: 'workspace'; abs: string; rel: string}
+  | {
+      ok: true;
+      kind: 'device';
+      treeUri: string;
+      rel: string;
+      mountName: string;
+      writable: boolean;
+    }
   | {ok: false; reason: string};
 
-export function resolveWorkspacePath(input: unknown): JailResult {
-  // Absent path means the workspace root; everything else must be a string.
-  let p: string;
-  if (input === undefined || input === null) {
-    p = '';
-  } else if (typeof input !== 'string') {
-    return {ok: false, reason: 'path must be a string'};
-  } else {
-    p = input.trim();
-  }
+/** Shared lexical rules for both roots: normalize separators, reject NUL /
+ *  drive letters / '..' / oversized segments, and collect clean segments.
+ *  Returns null with `reason` set when the input cannot be jailed. */
+function jailSegments(
+  p: string,
+  rootKind: WorkspaceRootKind,
+): {segments: string[]} | {reason: string} {
   if (p.includes('\0')) {
-    return {ok: false, reason: 'path contains a NUL byte'};
+    return {reason: 'path contains a NUL byte'};
   }
   p = p.replace(/\\/g, '/');
   if (/^[a-zA-Z]:/.test(p)) {
-    return {ok: false, reason: 'drive-letter paths are not allowed'};
+    return {reason: 'drive-letter paths are not allowed'};
   }
 
-  // Tolerate the model echoing the absolute workspace path back at us.
-  const root = workspaceRoot();
-  if (p === root) {
-    p = '';
-  } else if (p.startsWith(`${root}/`)) {
-    p = p.slice(root.length + 1);
+  // Tolerate the model echoing the sandbox's absolute path back at us.
+  if (rootKind === 'workspace') {
+    const root = workspaceRoot();
+    if (p === root) {
+      p = '';
+    } else if (p.startsWith(`${root}/`)) {
+      p = p.slice(root.length + 1);
+    }
   }
 
   // A bare '/' is the jail's own root as far as the model is concerned.
@@ -59,8 +94,7 @@ export function resolveWorkspacePath(input: unknown): JailResult {
   }
   if (p.startsWith('/')) {
     return {
-      ok: false,
-      reason: 'absolute paths outside the workspace are not allowed',
+      reason: `absolute paths outside the ${rootKind === 'device' ? 'granted directory' : 'workspace'} are not allowed`,
     };
   }
 
@@ -71,13 +105,11 @@ export function resolveWorkspacePath(input: unknown): JailResult {
     }
     if (seg === '..') {
       return {
-        ok: false,
-        reason: '".." is not allowed; paths are confined to the workspace',
+        reason: `".." is not allowed; paths are confined to the ${rootKind === 'device' ? 'granted directory' : 'workspace'}`,
       };
     }
     if (seg.length > 255) {
       return {
-        ok: false,
         reason: `path segment too long: ${seg.slice(0, 32)}...`,
       };
     }
@@ -86,9 +118,52 @@ export function resolveWorkspacePath(input: unknown): JailResult {
 
   const rel = segments.join('/');
   if (rel.length > 1024) {
-    return {ok: false, reason: 'path too long'};
+    return {reason: 'path too long'};
   }
-  return {ok: true, abs: rel ? `${root}/${rel}` : root, rel};
+  return {segments};
+}
+
+export function resolveWorkspacePath(
+  input: unknown,
+  rootKind: WorkspaceRootKind = 'workspace',
+): JailResult {
+  // Absent path means the root; everything else must be a string.
+  let p: string;
+  if (input === undefined || input === null) {
+    p = '';
+  } else if (typeof input !== 'string') {
+    return {ok: false, reason: 'path must be a string'};
+  } else {
+    p = input.trim();
+  }
+
+  const jailed = jailSegments(p, rootKind);
+  if ('reason' in jailed) {
+    return {ok: false, reason: jailed.reason};
+  }
+  const rel = jailed.segments.join('/');
+
+  if (rootKind === 'device') {
+    const mount = mountedDeviceDir;
+    if (!mount) {
+      return {
+        ok: false,
+        reason:
+          'no device directory is mounted; ask the user to grant one in Settings, or use the workspace root',
+      };
+    }
+    return {
+      ok: true,
+      kind: 'device',
+      treeUri: mount.treeUri,
+      rel,
+      mountName: mount.name,
+      writable: mount.writable,
+    };
+  }
+
+  const root = workspaceRoot();
+  return {ok: true, kind: 'workspace', abs: rel ? `${root}/${rel}` : root, rel};
 }
 
 /** mkdir -p, tolerant of the directory already existing. */

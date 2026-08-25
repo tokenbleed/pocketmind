@@ -53,6 +53,7 @@ import {CacheTypeMenuRow, useMenuAnchor} from './CacheTypeMenuRow';
 import {
   modelStore,
   uiStore,
+  agentFsStore,
   hfStore,
   ttsStore,
   searchProviderStore,
@@ -340,6 +341,24 @@ export const SettingsScreen: React.FC = observer(() => {
         setShowDraftModelMenu(true);
       },
     );
+  };
+
+  // Agent file access: open the system directory picker. Picker failures
+  // (cancelled flow, missing activity) leave the previous grant untouched.
+  const handleAgentFsGrant = async () => {
+    try {
+      await agentFsStore.grantDeviceDirectory();
+    } catch {
+      // Non-fatal: the card stays in its previous state.
+    }
+  };
+
+  const handleAgentFsRevoke = async () => {
+    try {
+      await agentFsStore.revokeDeviceDirectory();
+    } catch {
+      // Non-fatal.
+    }
   };
 
   const handleSearchProviderPress = () => {
@@ -1166,6 +1185,101 @@ export const SettingsScreen: React.FC = observer(() => {
               </View>
             </Card.Content>
           </Card>
+
+          {/* Agent file access (Android only): user-granted SAF directory
+              for the pal file tools (read/list/grep, opt-in write). */}
+          {Platform.OS === 'android' && (
+            <Card
+              elevation={0}
+              style={styles.card}
+              testID="agent-file-access-card">
+              <Card.Title title={l10n.settings.agentFileAccess.title} />
+              <Card.Content>
+                <View style={styles.settingItemContainer}>
+                  <Text variant="labelSmall" style={styles.textDescription}>
+                    {l10n.settings.agentFileAccess.description}
+                  </Text>
+
+                  {agentFsStore.deviceTreeUri ? (
+                    <>
+                      <View style={styles.switchContainer}>
+                        <View style={styles.textContainer}>
+                          <Text
+                            variant="titleMedium"
+                            style={styles.textLabel}
+                            testID="agent-fs-folder-name">
+                            {agentFsStore.deviceDirName ??
+                              l10n.settings.agentFileAccess.title}
+                          </Text>
+                          <Text
+                            variant="labelSmall"
+                            style={styles.textDescription}>
+                            {l10n.settings.agentFileAccess.grantedLabel}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {agentFsStore.deviceGrantRevoked && (
+                        <Text
+                          variant="labelSmall"
+                          style={styles.textDescription}
+                          testID="agent-fs-revoked-note">
+                          {l10n.settings.agentFileAccess.revokedNote}
+                        </Text>
+                      )}
+
+                      <Divider />
+
+                      <View style={styles.switchContainer}>
+                        <View style={styles.textContainer}>
+                          <Text variant="titleMedium" style={styles.textLabel}>
+                            {l10n.settings.agentFileAccess.writeToggle}
+                          </Text>
+                          <Text
+                            variant="labelSmall"
+                            style={styles.textDescription}>
+                            {
+                              l10n.settings.agentFileAccess
+                                .writeToggleDescription
+                            }
+                          </Text>
+                        </View>
+                        <Switch
+                          testID="agent-fs-write-switch"
+                          value={agentFsStore.deviceWritable}
+                          onValueChange={value =>
+                            agentFsStore.setDeviceWritable(value)
+                          }
+                        />
+                      </View>
+
+                      <Divider />
+
+                      <Button
+                        mode="outlined"
+                        onPress={handleAgentFsGrant}
+                        testID="agent-fs-change-button">
+                        {l10n.settings.agentFileAccess.changeFolder}
+                      </Button>
+                      <Button
+                        mode="text"
+                        onPress={handleAgentFsRevoke}
+                        testID="agent-fs-revoke-button">
+                        {l10n.settings.agentFileAccess.revoke}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      mode="outlined"
+                      onPress={handleAgentFsGrant}
+                      testID="agent-fs-grant-button">
+                      {l10n.settings.agentFileAccess.grant}
+                    </Button>
+                  )}
+                </View>
+              </Card.Content>
+            </Card>
+          )}
 
           {/* Internet Search */}
           <Card elevation={0} style={styles.card} testID="internet-search-card">

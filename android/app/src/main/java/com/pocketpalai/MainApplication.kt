@@ -18,6 +18,7 @@ import com.pocketpal.StorefrontPackage
 import com.pocketpal.AuthSessionPackage
 import com.pocketpal.ExternalContentLinkPackage
 import com.pocketpal.PdfTextPackage
+import com.pocketpal.SafFsPackage
 import com.pocketpal.download.DownloadPackage
 
 class MainApplication : Application(), ReactApplication {
@@ -35,6 +36,7 @@ class MainApplication : Application(), ReactApplication {
               add(ExternalContentLinkPackage())
               add(PdfTextPackage())
               add(ForegroundServicePackage())
+              add(SafFsPackage())
               add(DownloadPackage())
             }
 

@@ -1,5 +1,3 @@
-import * as RNFS from '@dr.pogodin/react-native-fs';
-
 import type {
   TalentEngine,
   TalentResult,
@@ -15,10 +13,10 @@ import {
   MAX_READ_CHARS,
   looksBinary,
   resolveWorkspacePath,
-  walkWorkspace,
   ensureWorkspace,
-  workspaceRoot,
 } from './workspaceFs';
+import {talentReadRel, talentWalk} from './talentFs';
+import {parseRoot, rootArgSchema} from './ReadFileEngine';
 
 function clampInt(v: unknown, def: number, min: number, max: number): number {
   const n = typeof v === 'number' && Number.isFinite(v) ? Math.floor(v) : def;
@@ -49,7 +47,8 @@ export class GrepFilesEngine implements TalentEngine {
       };
     }
 
-    const jail = resolveWorkspacePath(args?.path);
+    const root = parseRoot(args?.root);
+    const jail = resolveWorkspacePath(args?.path, root);
     if (!jail.ok) {
       return {
         type: 'error',
@@ -78,11 +77,13 @@ export class GrepFilesEngine implements TalentEngine {
       MAX_GREP_MATCHES,
     );
 
-    await ensureWorkspace();
+    if (jail.kind === 'workspace') {
+      await ensureWorkspace();
+    }
 
     let files;
     try {
-      const walked = await walkWorkspace(jail.abs, jail.rel, {
+      const walked = await talentWalk(jail, {
         recursive: true,
         maxEntries: MAX_GREP_FILES,
       });
@@ -96,12 +97,10 @@ export class GrepFilesEngine implements TalentEngine {
       };
     }
 
-    const root = workspaceRoot();
-
     if (files.length === 0) {
       return {
         type: 'text',
-        summary: 'no files in the workspace to search',
+        summary: `no files in the ${jail.kind === 'device' ? 'granted directory' : 'workspace'} to search`,
       };
     }
 
@@ -123,7 +122,7 @@ export class GrepFilesEngine implements TalentEngine {
       }
       let content: string;
       try {
-        content = await RNFS.readFile(`${root}/${file.rel}`, 'utf8');
+        content = await talentReadRel(jail, file.rel, MAX_GREP_FILE_BYTES);
       } catch {
         continue;
       }
@@ -167,8 +166,8 @@ export class GrepFilesEngine implements TalentEngine {
 
   systemPromptFragment(_ctx: SystemPromptContext): string {
     return (
-      'grep_files(pattern, path?, glob?, case_insensitive?, max_matches?) finds lines ' +
-      'matching a regex across workspace files; use it to locate content in large files ' +
+      'grep_files(pattern, path?, glob?, case_insensitive?, max_matches?, root?) finds lines ' +
+      'matching a regex across files; use it to locate content in large files ' +
       'before reading them with read_file.'
     );
   }
@@ -179,7 +178,7 @@ export class GrepFilesEngine implements TalentEngine {
       function: {
         name: 'grep_files',
         description:
-          'Search for a regex pattern across files in the private workspace and return matching lines with file:line prefixes.',
+          'Search for a regex pattern across files and return matching lines with file:line prefixes. Defaults to the private workspace; pass root:"device" for the user-granted directory.',
         parameters: {
           type: 'object',
           properties: {
@@ -191,8 +190,9 @@ export class GrepFilesEngine implements TalentEngine {
             path: {
               type: 'string',
               description:
-                'Subdirectory to search, relative to the workspace root (default: the whole workspace).',
+                'Subdirectory to search, relative to the selected root (default: the whole root).',
             },
+            root: rootArgSchema(),
             glob: {
               type: 'string',
               description:

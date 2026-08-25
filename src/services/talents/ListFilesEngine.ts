@@ -8,10 +8,12 @@ import {
   DEFAULT_LIST_LIMIT,
   MAX_LIST_LIMIT,
   formatBytes,
+  getMountedDeviceDir,
   resolveWorkspacePath,
-  walkWorkspace,
   ensureWorkspace,
 } from './workspaceFs';
+import {talentWalk} from './talentFs';
+import {parseRoot, rootArgSchema} from './ReadFileEngine';
 
 function clampInt(v: unknown, def: number, min: number, max: number): number {
   const n = typeof v === 'number' && Number.isFinite(v) ? Math.floor(v) : def;
@@ -22,7 +24,8 @@ export class ListFilesEngine implements TalentEngine {
   readonly name = 'list_files';
 
   async execute(args: Record<string, any>): Promise<TalentResult> {
-    const jail = resolveWorkspacePath(args?.path);
+    const root = parseRoot(args?.root);
+    const jail = resolveWorkspacePath(args?.path, root);
     if (!jail.ok) {
       return {
         type: 'error',
@@ -33,12 +36,14 @@ export class ListFilesEngine implements TalentEngine {
     const recursive = args?.recursive !== false;
     const limit = clampInt(args?.limit, DEFAULT_LIST_LIMIT, 1, MAX_LIST_LIMIT);
 
-    await ensureWorkspace();
+    if (jail.kind === 'workspace') {
+      await ensureWorkspace();
+    }
 
     let entries;
     let truncated;
     try {
-      const walked = await walkWorkspace(jail.abs, jail.rel, {
+      const walked = await talentWalk(jail, {
         recursive,
         maxEntries: limit,
       });
@@ -53,12 +58,13 @@ export class ListFilesEngine implements TalentEngine {
     }
 
     if (entries.length === 0) {
-      return {
-        type: 'text',
-        summary:
-          'workspace is empty (no files yet). write_file creates files; ' +
-          'paths are relative to the workspace root.',
-      };
+      const mount = getMountedDeviceDir();
+      const summary =
+        jail.kind === 'device'
+          ? `the granted directory${mount ? ` (${mount.name})` : ''} is empty or unreadable`
+          : 'workspace is empty (no files yet). write_file creates files; ' +
+            'paths are relative to the workspace root.';
+      return {type: 'text', summary};
     }
 
     const lines = entries.map(e =>
@@ -70,17 +76,28 @@ export class ListFilesEngine implements TalentEngine {
       ? `\n(list truncated at ${limit} entries; pass a narrower path or a smaller limit)`
       : '';
     const fileCount = entries.filter(e => !e.isDir).length;
+    const label =
+      jail.kind === 'device'
+        ? `device:${jail.rel || getMountedDeviceDir()?.name || 'device'}`
+        : jail.rel || 'workspace';
     return {
       type: 'text',
-      summary: `${jail.rel || 'workspace'} - ${fileCount} file(s):\n${lines.join('\n')}${note}`,
+      summary: `${label} - ${fileCount} file(s):\n${lines.join('\n')}${note}`,
     };
   }
 
   systemPromptFragment(_ctx: SystemPromptContext): string {
+    const mount = getMountedDeviceDir();
+    const mountNote = mount
+      ? ` The user has granted access to a device directory "${mount.name}" ` +
+        `(root "device"); its files are readable with list_files/read_file/grep_files` +
+        `${mount.writable ? ' and writable with write_file' : ' but read-only'}.`
+      : '';
     return (
-      'File workspace: list_files(path?, recursive?, limit?) lists the files in the ' +
-      "app's private workspace directory. All workspace tools use paths relative to " +
-      'that directory and cannot access anything outside it.'
+      'File workspace: list_files(path?, recursive?, limit?, root?) lists files, ' +
+      "defaulting to the app's private workspace directory. All workspace tools use " +
+      'paths relative to their root and cannot access anything outside it.' +
+      mountNote
     );
   }
 
@@ -90,15 +107,16 @@ export class ListFilesEngine implements TalentEngine {
       function: {
         name: 'list_files',
         description:
-          'List files in the private workspace directory. Directories are shown with a trailing slash.',
+          'List files. Defaults to the private workspace; pass root:"device" for the user-granted directory. Directories are shown with a trailing slash.',
         parameters: {
           type: 'object',
           properties: {
             path: {
               type: 'string',
               description:
-                'Subdirectory to list, relative to the workspace root (default: the root).',
+                'Subdirectory to list, relative to the selected root (default: the root).',
             },
+            root: rootArgSchema(),
             recursive: {
               type: 'boolean',
               description: 'Recurse into subdirectories (default: true).',

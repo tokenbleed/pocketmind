@@ -1,5 +1,3 @@
-import * as RNFS from '@dr.pogodin/react-native-fs';
-
 import type {
   TalentEngine,
   TalentResult,
@@ -13,18 +11,35 @@ import {
   MAX_READABLE_FILE_BYTES,
   looksBinary,
   resolveWorkspacePath,
+  type WorkspaceRootKind,
 } from './workspaceFs';
+import {talentReadText, talentStat} from './talentFs';
 
 function clampInt(v: unknown, def: number, min: number, max: number): number {
   const n = typeof v === 'number' && Number.isFinite(v) ? Math.floor(v) : def;
   return Math.min(max, Math.max(min, n));
 }
 
+export function parseRoot(v: unknown): WorkspaceRootKind {
+  return v === 'device' ? 'device' : 'workspace';
+}
+
+export function rootArgSchema() {
+  return {
+    type: 'string',
+    enum: ['workspace', 'device'],
+    description:
+      'Filesystem root: "workspace" is the app-private sandbox (default); ' +
+      '"device" is the user-granted directory, when one is mounted.',
+  };
+}
+
 export class ReadFileEngine implements TalentEngine {
   readonly name = 'read_file';
 
   async execute(args: Record<string, any>): Promise<TalentResult> {
-    const jail = resolveWorkspacePath(args?.path);
+    const root = parseRoot(args?.root);
+    const jail = resolveWorkspacePath(args?.path, root);
     if (!jail.ok) {
       return {
         type: 'error',
@@ -41,15 +56,15 @@ export class ReadFileEngine implements TalentEngine {
     }
 
     try {
-      const info = await RNFS.stat(jail.abs);
-      if (info.isDirectory()) {
+      const info = await talentStat(jail);
+      if (info.isDir) {
         return {
           type: 'error',
           summary: `read_file: ${jail.rel} is a directory`,
           errorMessage: 'use list_files to inspect directories',
         };
       }
-      if ((info.size ?? 0) > MAX_READABLE_FILE_BYTES) {
+      if (info.size > MAX_READABLE_FILE_BYTES) {
         return {
           type: 'error',
           summary: `read_file: ${jail.rel} is too large to read whole`,
@@ -58,7 +73,7 @@ export class ReadFileEngine implements TalentEngine {
         };
       }
 
-      const content = await RNFS.readFile(jail.abs, 'utf8');
+      const content = await talentReadText(jail, MAX_READABLE_FILE_BYTES);
       if (looksBinary(content.slice(0, 4096))) {
         return {
           type: 'error',
@@ -104,8 +119,10 @@ export class ReadFileEngine implements TalentEngine {
 
   systemPromptFragment(_ctx: SystemPromptContext): string {
     return (
-      'read_file(path, offset?, limit?) reads a workspace text file, paged by line ' +
-      '(offset is the 1-based first line, limit caps the line count).'
+      'read_file(path, offset?, limit?, root?) reads a text file, paged by line ' +
+      '(offset is the 1-based first line, limit caps the line count). root ' +
+      'selects "workspace" (the private sandbox, default) or "device" (the ' +
+      'user-granted directory, when mounted).'
     );
   }
 
@@ -115,14 +132,16 @@ export class ReadFileEngine implements TalentEngine {
       function: {
         name: 'read_file',
         description:
-          'Read a text file from the private workspace, returning numbered line ranges.',
+          'Read a text file, returning numbered line ranges. Defaults to the private workspace; pass root:"device" for the user-granted directory.',
         parameters: {
           type: 'object',
           properties: {
             path: {
               type: 'string',
-              description: 'File path relative to the workspace root.',
+              description:
+                'File path relative to the selected root (workspace sandbox or granted directory).',
             },
+            root: rootArgSchema(),
             offset: {
               type: 'number',
               description: 'First line to return, 1-based (default: 1).',

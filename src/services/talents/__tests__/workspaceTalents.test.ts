@@ -149,6 +149,7 @@ describe('resolveWorkspacePath jail', () => {
     const r = resolveWorkspacePath('notes/todo.md');
     expect(r).toEqual({
       ok: true,
+      kind: 'workspace',
       abs: `${workspaceRoot()}/notes/todo.md`,
       rel: 'notes/todo.md',
     });

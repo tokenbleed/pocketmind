@@ -61,6 +61,7 @@ import {mockServerStore} from '../__mocks__/stores/serverStore';
 import {mockTTSStore} from '../__mocks__/stores/ttsStore';
 import {checkoutFlowStore as mockCheckoutFlowStore} from '../__mocks__/stores/checkoutFlowStore';
 import {mockSearchProviderStore} from '../__mocks__/stores/searchProviderStore';
+import {mockAgentFsStore} from '../__mocks__/stores/agentFsStore';
 import {mockKnowledgeBaseStore} from '../__mocks__/stores/knowledgeBaseStore';
 import {mockEmbeddingStore} from '../__mocks__/stores/embeddingStore';
 
@@ -96,6 +97,25 @@ jest.mock('../src/specs/NativeHardwareInfo', () => ({
   },
 }));
 
+// Mock SafFs TurboModule (Storage Access Bridge). Device-root tests
+// override the individual jest.fn implementations; the defaults model
+// "nothing mounted" so workspace-only tests are unaffected.
+jest.mock('../src/specs/NativeSafFs', () => ({
+  __esModule: true,
+  default: {
+    stat: jest.fn(() =>
+      Promise.resolve({exists: false, isDir: false, size: 0, mtime: null}),
+    ),
+    listDir: jest.fn(() => Promise.resolve([])),
+    readFile: jest.fn(() =>
+      Promise.reject(new Error('SafFs.readFile not configured in test')),
+    ),
+    writeFile: jest.fn(() =>
+      Promise.reject(new Error('SafFs.writeFile not configured in test')),
+    ),
+  },
+}));
+
 jest.mock('react-native-safe-area-context', () => {
   const inset = {top: 0, right: 0, bottom: 0, left: 0};
   return {
@@ -122,6 +142,7 @@ jest.mock('../src/store', () => {
     ttsStore: mockTTSStore,
     checkoutFlowStore: mockCheckoutFlowStore,
     searchProviderStore: mockSearchProviderStore,
+    agentFsStore: mockAgentFsStore,
     knowledgeBaseStore: mockKnowledgeBaseStore,
     embeddingStore: mockEmbeddingStore,
     defaultCompletionSettings: mockDefaultCompletionSettings,

@@ -128,6 +128,17 @@
     "importButton": "Import",
     "importSuccess": "Successfully imported {{count}} chat session(s).",
     "importError": "Failed to import chat sessions. Please check the file format.",
+    "agentFileAccess": {
+      "title": "Agent file access",
+      "description": "Grant pals access to a folder of your choice. Files in it can be listed, read, and searched; writing is off by default. Access can be revoked at any time.",
+      "grant": "Choose folder",
+      "changeFolder": "Choose a different folder",
+      "revoke": "Remove access",
+      "grantedLabel": "Folder granted to pals",
+      "writeToggle": "Allow writing",
+      "writeToggleDescription": "When enabled, pals can create and edit files in the folder.",
+      "revokedNote": "System access to this folder was removed. Choose the folder again to restore it."
+    },
     "internetSearch": {
       "title": "Internet Search",
       "description": "Let Pals search the web with their own tools. Bring your own API key - PocketPal never holds your keys or routes your queries.",

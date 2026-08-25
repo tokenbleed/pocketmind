@@ -181,6 +181,9 @@ dependencies {
     // Core library for AndroidX Jetpack - Needed for WindowCompat (we use for edge-to-edge)
     implementation "androidx.core:core-ktx:1.17.0"
 
+    // Storage Access Bridge: DocumentFile for user-granted tree URIs (SafFsModule)
+    implementation "androidx.documentfile:documentfile:1.0.1"
+
     // Chrome Custom Tabs for the in-app PalsHub checkout (AuthSessionModule)
     implementation "androidx.browser:browser:1.8.0"
 

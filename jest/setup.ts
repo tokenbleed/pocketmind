@@ -3,14 +3,13 @@ import mockClipboard from '@react-native-clipboard/clipboard/jest/clipboard-mock
 
 import 'react-native-gesture-handler/jestSetup';
 
-// __E2E__ is a build-time constant in prod/e2e builds (see babel.config.js),
+// __E2E__ is a build-time constant in prod builds (see babel.config.js),
 // but in Jest the transform-define plugin is disabled so it stays a runtime
-// global. Default to true so adapter tests render their components; tests
-// that assert the DCE gate override with `(global as any).__E2E__ = false`.
+// global. Default to true so tests can render __E2E__-gated paths; tests
+// that assert the gate override with `(global as any).__E2E__ = false`.
 (global as any).__E2E__ = true;
-// Onboarding bypass flag: default off in Jest so the AutomationBridge
-// adapter renders but no-ops; tests that need the bypass-on path override
-// with `(global as any).__E2E_SKIP_ONBOARDING__ = true`.
+// Onboarding bypass flag: default off in Jest; tests that need the
+// bypass-on path override with `(global as any).__E2E_SKIP_ONBOARDING__ = true`.
 (global as any).__E2E_SKIP_ONBOARDING__ = false;
 
 jest.mock('react-native-haptic-feedback');

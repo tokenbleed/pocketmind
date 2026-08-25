@@ -56,7 +56,6 @@ describe('useDeepLinking - hub/run dispatch', () => {
     jest.clearAllMocks();
     registeredHandler = undefined;
     deepLinkStore.pendingHubRun = null;
-    (global as any).__E2E__ = false;
     getInitialURLSpy = jest
       .spyOn(Linking, 'getInitialURL')
       .mockResolvedValue(null);

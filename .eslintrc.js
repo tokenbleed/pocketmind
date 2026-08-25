@@ -44,15 +44,9 @@ module.exports = {
       env: {node: true, es2021: true},
     },
     {
-      // Nothing inside src/ (outside src/__automation__/) may import from
-      // the automation bridge. The bridge only ships in the E2E flavor and
-      // any stray import could drag it into the prod bundle, defeating DCE.
-      // The allow-list below re-enables the rule only for App.tsx and the
-      // deep-link hook — the two legitimate mount points.
-      //
-      // The same rule also seeds the Paper-import discipline blocklist:
-      // Paper symbols whose DS replacement has shipped get banned
-      // per-symbol as call-sites migrate.
+      // Paper-import discipline blocklist: Paper symbols whose DS
+      // replacement has shipped get banned per-symbol as call-sites
+      // migrate.
       //
       // No per-folder Paper carve-out is wired yet because the blocklist
       // only contains 'Surface', and none of the wrap-Paper DS folders
@@ -60,7 +54,6 @@ module.exports = {
       // future blocklist entry that overlaps a wrap-Paper folder gets
       // its own allowance in lock-step with the addition.
       files: ['src/**/*.{ts,tsx}'],
-      excludedFiles: ['src/__automation__/**'],
       rules: {
         'no-restricted-imports': [
           'error',
@@ -71,13 +64,6 @@ module.exports = {
                 importNames: ['Surface'],
                 message:
                   "DS replacement available: import 'Surface' from 'src/components/ui' instead. Locked thin Paper set: Text, Button, IconButton, Portal, Provider.",
-              },
-            ],
-            patterns: [
-              {
-                group: ['**/__automation__', '**/__automation__/**'],
-                message:
-                  'Do not import from src/__automation__/ outside the automation folder itself. See src/__automation__/README.md.',
               },
             ],
           },

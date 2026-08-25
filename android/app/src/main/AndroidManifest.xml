@@ -77,6 +77,14 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- Foreground service that keeps the process alive while the
+             local OpenAI-compatible API server is serving. The HTTP
+             socket itself is owned by ApiServerModule. -->
+        <service
+            android:name=".ApiServerService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
         <!-- Optional native library for OpenCL (GPU acceleration) -->
         <uses-native-library
             android:name="libOpenCL.so"

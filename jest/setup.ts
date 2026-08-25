@@ -62,6 +62,7 @@ import {mockTTSStore} from '../__mocks__/stores/ttsStore';
 import {checkoutFlowStore as mockCheckoutFlowStore} from '../__mocks__/stores/checkoutFlowStore';
 import {mockSearchProviderStore} from '../__mocks__/stores/searchProviderStore';
 import {mockAgentFsStore} from '../__mocks__/stores/agentFsStore';
+import {mockApiServerStore} from '../__mocks__/stores/apiServerStore';
 import {mockKnowledgeBaseStore} from '../__mocks__/stores/knowledgeBaseStore';
 import {mockEmbeddingStore} from '../__mocks__/stores/embeddingStore';
 
@@ -116,6 +117,20 @@ jest.mock('../src/specs/NativeSafFs', () => ({
   },
 }));
 
+// Mock the local API server TurboModule. Router tests override the
+// respond jest.fns; start/stop defaults are inert.
+jest.mock('../src/specs/NativeApiServer', () => ({
+  __esModule: true,
+  default: {
+    start: jest.fn(() => Promise.resolve('127.0.0.1:8080')),
+    stop: jest.fn(() => Promise.resolve()),
+    respond: jest.fn(),
+    respondStreamChunk: jest.fn(),
+    respondStreamEnd: jest.fn(),
+    respondStreamFail: jest.fn(),
+  },
+}));
+
 jest.mock('react-native-safe-area-context', () => {
   const inset = {top: 0, right: 0, bottom: 0, left: 0};
   return {
@@ -143,6 +158,7 @@ jest.mock('../src/store', () => {
     checkoutFlowStore: mockCheckoutFlowStore,
     searchProviderStore: mockSearchProviderStore,
     agentFsStore: mockAgentFsStore,
+    apiServerStore: mockApiServerStore,
     knowledgeBaseStore: mockKnowledgeBaseStore,
     embeddingStore: mockEmbeddingStore,
     defaultCompletionSettings: mockDefaultCompletionSettings,

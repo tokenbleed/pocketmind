@@ -54,6 +54,7 @@ import {
   modelStore,
   uiStore,
   agentFsStore,
+  apiServerStore,
   hfStore,
   ttsStore,
   searchProviderStore,
@@ -358,6 +359,31 @@ export const SettingsScreen: React.FC = observer(() => {
       await agentFsStore.revokeDeviceDirectory();
     } catch {
       // Non-fatal.
+    }
+  };
+
+  // Local API server: draft port text is committed on end-edit so the
+  // field stays typeable while the store holds the clamped integer.
+  const [apiPortDraft, setApiPortDraft] = useState(String(apiServerStore.port));
+  const handleApiPortCommit = () => {
+    const parsed = parseInt(apiPortDraft, 10);
+    apiServerStore.setPort(Number.isNaN(parsed) ? 0 : parsed);
+    setApiPortDraft(String(apiServerStore.port));
+  };
+
+  const handleApiServerStart = async () => {
+    try {
+      await apiServerStore.start();
+    } catch {
+      // start() records its own lastError; nothing else to do.
+    }
+  };
+
+  const handleApiServerStop = async () => {
+    try {
+      await apiServerStore.stop();
+    } catch {
+      // Stop is idempotent.
     }
   };
 
@@ -1275,6 +1301,100 @@ export const SettingsScreen: React.FC = observer(() => {
                       testID="agent-fs-grant-button">
                       {l10n.settings.agentFileAccess.grant}
                     </Button>
+                  )}
+                </View>
+              </Card.Content>
+            </Card>
+          )}
+
+          {/* Local API server (Android only): OpenAI-compatible endpoint
+              served by the loaded model. */}
+          {Platform.OS === 'android' && (
+            <Card elevation={0} style={styles.card} testID="local-api-card">
+              <Card.Title title={l10n.settings.localApiServer.title} />
+              <Card.Content>
+                <View style={styles.settingItemContainer}>
+                  <Text variant="labelSmall" style={styles.textDescription}>
+                    {l10n.settings.localApiServer.description}
+                  </Text>
+
+                  {apiServerStore.running ? (
+                    <>
+                      <Text
+                        variant="titleMedium"
+                        style={styles.textLabel}
+                        testID="local-api-status">
+                        http://{apiServerStore.address}
+                      </Text>
+                      <Text variant="labelSmall" style={styles.textDescription}>
+                        {apiServerStore.bindLan
+                          ? l10n.settings.localApiServer.lanNote
+                          : l10n.settings.localApiServer.loopbackNote}
+                      </Text>
+                      <Button
+                        mode="outlined"
+                        onPress={handleApiServerStop}
+                        testID="local-api-stop">
+                        {l10n.settings.localApiServer.stop}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <TextInput
+                        label={l10n.settings.localApiServer.portLabel}
+                        value={apiPortDraft}
+                        keyboardType="number-pad"
+                        onChangeText={setApiPortDraft}
+                        onEndEditing={handleApiPortCommit}
+                        testID="local-api-port"
+                      />
+
+                      <View style={styles.switchContainer}>
+                        <View style={styles.textContainer}>
+                          <Text variant="titleMedium" style={styles.textLabel}>
+                            {l10n.settings.localApiServer.lanToggle}
+                          </Text>
+                          <Text
+                            variant="labelSmall"
+                            style={styles.textDescription}>
+                            {l10n.settings.localApiServer.lanToggleDescription}
+                          </Text>
+                        </View>
+                        <Switch
+                          testID="local-api-lan-switch"
+                          value={apiServerStore.bindLan}
+                          onValueChange={value =>
+                            apiServerStore.setBindLan(value)
+                          }
+                        />
+                      </View>
+
+                      <TextInput
+                        label={l10n.settings.localApiServer.apiKeyLabel}
+                        value={apiServerStore.apiKey}
+                        onChangeText={text => apiServerStore.setApiKey(text)}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        secureTextEntry
+                        testID="local-api-key"
+                      />
+
+                      {apiServerStore.lastError && (
+                        <Text
+                          variant="labelSmall"
+                          style={styles.textDescription}
+                          testID="local-api-error">
+                          {apiServerStore.lastError}
+                        </Text>
+                      )}
+
+                      <Button
+                        mode="outlined"
+                        onPress={handleApiServerStart}
+                        testID="local-api-start">
+                        {l10n.settings.localApiServer.start}
+                      </Button>
+                    </>
                   )}
                 </View>
               </Card.Content>

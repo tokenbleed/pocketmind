@@ -139,6 +139,18 @@
       "writeToggleDescription": "When enabled, pals can create and edit files in the folder.",
       "revokedNote": "System access to this folder was removed. Choose the folder again to restore it."
     },
+    "localApiServer": {
+      "title": "Local API server",
+      "description": "Serve the loaded model over an OpenAI-compatible API (chat completions) so other apps or devices can use it as an endpoint.",
+      "portLabel": "Port",
+      "lanToggle": "Allow other devices (LAN)",
+      "lanToggleDescription": "When enabled, computers on the same network can call the API. Requires an API key.",
+      "apiKeyLabel": "API key (optional)",
+      "start": "Start server",
+      "stop": "Stop server",
+      "lanNote": "Reachable from other devices on this network.",
+      "loopbackNote": "Reachable from apps on this device only."
+    },
     "internetSearch": {
       "title": "Internet Search",
       "description": "Let Pals search the web with their own tools. Bring your own API key - PocketPal never holds your keys or routes your queries.",

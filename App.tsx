@@ -15,6 +15,7 @@ import {
 } from 'react-native-gesture-handler';
 
 import {ttsStore, uiStore} from './src/store';
+import {ensureApiServerRouter} from './src/services/localApi/serverRouter';
 import {useTheme} from './src/hooks';
 import {useDeepLinking} from './src/hooks/useDeepLinking';
 import {Theme} from './src/utils/types';
@@ -97,6 +98,13 @@ const App = observer(() => {
     ttsStore.init().catch(() => {
       // init() swallows its own errors; catch to satisfy no-floating-promises.
     });
+  }, []);
+
+  // Attach the local API server's request router. The listener is
+  // passive until the server is started from settings; registering it
+  // here (not in a store constructor) keeps store imports cycle-free.
+  React.useEffect(() => {
+    ensureApiServerRouter();
   }, []);
 
   return (

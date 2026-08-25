@@ -37,6 +37,7 @@ class MainApplication : Application(), ReactApplication {
               add(PdfTextPackage())
               add(ForegroundServicePackage())
               add(SafFsPackage())
+              add(ApiServerPackage())
               add(DownloadPackage())
             }
 

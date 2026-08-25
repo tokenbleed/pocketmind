@@ -183,6 +183,7 @@ dependencies {
 
     // Storage Access Bridge: DocumentFile for user-granted tree URIs (SafFsModule)
     implementation "androidx.documentfile:documentfile:1.0.1"
+    implementation "org.nanohttpd:nanohttpd:2.3.1"
 
     // Chrome Custom Tabs for the in-app PalsHub checkout (AuthSessionModule)
     implementation "androidx.browser:browser:1.8.0"

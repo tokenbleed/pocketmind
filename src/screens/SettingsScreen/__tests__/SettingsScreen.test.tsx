@@ -11,7 +11,7 @@ import {
 
 import {SettingsScreen} from '../SettingsScreen';
 
-import {modelStore, uiStore, ttsStore} from '../../../store';
+import {modelStore, uiStore, ttsStore, apiServerStore} from '../../../store';
 import {l10n} from '../../../locales';
 
 jest.useFakeTimers();
@@ -1277,6 +1277,53 @@ describe('SettingsScreen', () => {
     await waitFor(() => {
       // Should show effective value clamped to n_ctx (2048)
       expect(getByText(/effective: 2048/)).toBeTruthy();
+    });
+  });
+
+  describe('local API server card', () => {
+    beforeEach(() => {
+      Platform.OS = 'android';
+    });
+
+    it('is hidden off Android', () => {
+      Platform.OS = 'ios';
+      const {queryByTestId} = render(<SettingsScreen />, {
+        withSafeArea: true,
+        withNavigation: true,
+      });
+      expect(queryByTestId('local-api-card')).toBeFalsy();
+    });
+
+    it('shows config controls and starts the server', async () => {
+      const {getByTestId} = render(<SettingsScreen />, {
+        withSafeArea: true,
+        withNavigation: true,
+      });
+
+      expect(getByTestId('local-api-port').props.value).toBe('8080');
+
+      await act(async () => {
+        fireEvent(getByTestId('local-api-start'), 'press');
+      });
+      expect(apiServerStore.start).toHaveBeenCalled();
+    });
+
+    it('shows the bound address and stop control while running', async () => {
+      runInAction(() => {
+        apiServerStore.running = true;
+        apiServerStore.address = '127.0.0.1:8080';
+      });
+      const {getByTestId, getByText} = render(<SettingsScreen />, {
+        withSafeArea: true,
+        withNavigation: true,
+      });
+
+      expect(getByText('http://127.0.0.1:8080')).toBeTruthy();
+
+      await act(async () => {
+        fireEvent(getByTestId('local-api-stop'), 'press');
+      });
+      expect(apiServerStore.stop).toHaveBeenCalled();
     });
   });
 });

@@ -71,7 +71,6 @@ package-lock.json
 .env
 
 # Firebase config files (prod + all flavor-specific overrides)
-android/app/**/google-services.json
 ios/GoogleService-Info.plist
 
 # Environment files

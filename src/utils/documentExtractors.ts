@@ -21,6 +21,12 @@ import * as RNFS from '@dr.pogodin/react-native-fs';
 
 /** Zip-based documents above this size are skipped (RAM guard). */
 export const MAX_ZIP_BYTES = 10 * 1024 * 1024;
+/** Total uncompressed payload allowed across all zip entries. A
+ * compressed 10MB input can claim gigabytes uncompressed (zip bomb);
+ * the guard reads the central directory and refuses before inflating. */
+export const MAX_ZIP_UNCOMPRESSED_BYTES = 64 * 1024 * 1024;
+/** Entry-count cap for the same reason (million-entry bombs). */
+export const MAX_ZIP_ENTRIES = 5000;
 /** PDFs above this size are skipped. */
 export const MAX_PDF_BYTES = 25 * 1024 * 1024;
 /** Extraction output cap; the chat path applies its own smaller caps. */
@@ -108,6 +114,67 @@ export const sniffFormat = (bytes: Uint8Array): 'pdf' | 'zip' | null => {
     return 'zip'; // PK...: local header, empty, or spanned marker
   }
   return null;
+};
+
+// --- zip bomb guard (pure, unit-tested) ---------------------------------
+
+const u16 = (b: Uint8Array, o: number): number =>
+  (b[o] | (b[o + 1] << 8)) & 0xffff;
+const u32 = (b: Uint8Array, o: number): number =>
+  (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+
+/**
+ * Sum the declared uncompressed sizes from the zip central directory
+ * WITHOUT inflating anything. Returns null when the directory is
+ * malformed or ZIP64-shaped (both are out of scope for documents we
+ * accept; failing closed is the safe answer). Caller refuses the file
+ * when the declared total (or entry count) exceeds the caps.
+ */
+export const zipUncompressedStats = (
+  bytes: Uint8Array,
+): {entries: number; totalUncompressed: number} | null => {
+  // EOCD signature PK\x05\x06 lives in the last 22 + 65535 bytes.
+  const scanStart = Math.max(0, bytes.length - 22 - 65535);
+  let eocd = -1;
+  for (let i = bytes.length - 22; i >= scanStart; i--) {
+    if (
+      bytes[i] === 0x50 &&
+      bytes[i + 1] === 0x4b &&
+      bytes[i + 2] === 0x05 &&
+      bytes[i + 3] === 0x06
+    ) {
+      eocd = i;
+      break;
+    }
+  }
+  if (eocd < 0 || eocd + 22 > bytes.length) {
+    return null;
+  }
+  const entryCount = u16(bytes, eocd + 10);
+  const cdSize = u32(bytes, eocd + 12);
+  const cdOffset = u32(bytes, eocd + 16);
+  // ZIP64 markers or a directory that runs past EOF: fail closed.
+  if (
+    entryCount === 0xffff ||
+    cdOffset === 0xffffffff ||
+    cdSize === 0xffffffff ||
+    cdOffset + cdSize > bytes.length
+  ) {
+    return null;
+  }
+  let total = 0;
+  let p = cdOffset;
+  for (let i = 0; i < entryCount; i++) {
+    if (p + 46 > bytes.length || u32(bytes, p) !== 0x02014b50) {
+      return null;
+    }
+    total += u32(bytes, p + 24); // uncompressed size
+    if (total > MAX_ZIP_UNCOMPRESSED_BYTES) {
+      return {entries: i + 1, totalUncompressed: total};
+    }
+    p += 46 + u16(bytes, p + 28) + u16(bytes, p + 30) + u16(bytes, p + 32);
+  }
+  return {entries: entryCount, totalUncompressed: total};
 };
 
 // --- XML/HTML to text (pure, unit-tested) ---
@@ -383,7 +450,18 @@ export const extractDocumentText = async (
     }
     if (format === 'zip') {
       const fullB64 = await RNFS.read(localPath, 0, 0, 'base64');
-      const files = unzipSync(b64ToBytes(fullB64));
+      const raw = b64ToBytes(fullB64);
+      // Zip-bomb guard: refuse before inflating when the central
+      // directory declares an oversized or malformed payload.
+      const stats = zipUncompressedStats(raw);
+      if (
+        !stats ||
+        stats.totalUncompressed > MAX_ZIP_UNCOMPRESSED_BYTES ||
+        stats.entries > MAX_ZIP_ENTRIES
+      ) {
+        return null;
+      }
+      const files = unzipSync(raw);
       let text = zipFilesToText(files, ext);
       if (text.length > MAX_EXTRACT_CHARS) {
         text = `${text.slice(0, MAX_EXTRACT_CHARS)}\n\n[truncated]`;

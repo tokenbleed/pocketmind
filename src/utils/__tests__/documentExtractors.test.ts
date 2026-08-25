@@ -8,12 +8,15 @@ import {
   extractCapFor,
   htmlToText,
   isExtractableFile,
+  MAX_ZIP_ENTRIES,
+  MAX_ZIP_UNCOMPRESSED_BYTES,
   odfXmlToText,
   pptxXmlToText,
   slideOrder,
   sniffFormat,
   xlsxFilesToText,
   zipFilesToText,
+  zipUncompressedStats,
 } from '../documentExtractors';
 
 const enc = (s: string) => strToU8(s);
@@ -207,5 +210,82 @@ describe('zipFilesToText routing', () => {
 
   it('returns empty for unknown package types', () => {
     expect(zipFilesToText({'a.xml': enc('x')}, 'zip')).toBe('');
+  });
+});
+
+describe('zipUncompressedStats (zip-bomb guard)', () => {
+  const zipSync = (files: Record<string, Uint8Array>) =>
+    // fflate zipSync produces a real central directory; reuse via dynamic
+    // import-free path: build through the same module under test.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require('fflate').zipSync(files);
+
+  it('reports entries and total uncompressed size for a valid zip', () => {
+    const zipped = zipSync({'a.txt': enc('hello'), 'b.txt': enc('world!')});
+    const stats = zipUncompressedStats(zipped);
+    expect(stats).not.toBeNull();
+    expect(stats!.entries).toBe(2);
+    expect(stats!.totalUncompressed).toBe(11);
+  });
+
+  it('flags a declared total above the cap without inflating', () => {
+    // One entry whose declared uncompressed size alone exceeds the cap.
+    // Built by hand: local header + stored (method 0) data + central
+    // directory + EOCD, with the central-directory uncompressed size
+    // field set to the cap + 1.
+    const dataLen = 1;
+    const local = new Uint8Array(30 + dataLen);
+    local.set([0x50, 0x4b, 0x03, 0x04], 0);
+    const dv = new DataView(local.buffer);
+    dv.setUint16(8, 0, true); // method: stored
+    dv.setUint32(18, dataLen, true); // local uncompressed size
+    dv.setUint32(22, dataLen, true); // local compressed size
+    local[30] = 0x61; // 'a'
+
+    const cd = new Uint8Array(46);
+    cd.set([0x50, 0x4b, 0x01, 0x02], 0);
+    const cdv = new DataView(cd.buffer);
+    cdv.setUint16(10, 0, true); // method: stored
+    cdv.setUint32(24, MAX_ZIP_UNCOMPRESSED_BYTES + 1, true); // uncompressed
+    cdv.setUint32(28, dataLen, true); // compressed
+    cdv.setUint32(42, 0, true); // local header offset
+
+    const eocd = new Uint8Array(22);
+    eocd.set([0x50, 0x4b, 0x05, 0x06], 0);
+    const ev = new DataView(eocd.buffer);
+    ev.setUint16(8, 1, true); // entries on this disk
+    ev.setUint16(10, 1, true); // total entries
+    ev.setUint32(12, cd.length, true); // cd size
+    ev.setUint32(16, local.length, true); // cd offset
+
+    const bomb = new Uint8Array(local.length + cd.length + eocd.length);
+    bomb.set(local, 0);
+    bomb.set(cd, local.length);
+    bomb.set(eocd, local.length + cd.length);
+
+    const stats = zipUncompressedStats(bomb);
+    expect(stats).not.toBeNull();
+    expect(stats!.totalUncompressed).toBe(MAX_ZIP_UNCOMPRESSED_BYTES + 1);
+    expect(stats!.totalUncompressed).toBeGreaterThan(
+      MAX_ZIP_UNCOMPRESSED_BYTES,
+    );
+  });
+
+  it('fails closed (null) for truncated or zip64-looking input', () => {
+    expect(zipUncompressedStats(new Uint8Array(0))).toBeNull();
+    expect(zipUncompressedStats(enc('not a zip'))).toBeNull();
+    // EOCD present but central directory claims to run past EOF.
+    const eocd = new Uint8Array(22);
+    eocd.set([0x50, 0x4b, 0x05, 0x06], 0);
+    const ev = new DataView(eocd.buffer);
+    ev.setUint16(10, 1, true); // 1 entry
+    ev.setUint32(12, 46, true); // cd size 46
+    ev.setUint32(16, 0x10000, true); // cd offset beyond buffer
+    expect(zipUncompressedStats(eocd)).toBeNull();
+  });
+
+  it('keeps sane caps', () => {
+    expect(MAX_ZIP_UNCOMPRESSED_BYTES).toBe(64 * 1024 * 1024);
+    expect(MAX_ZIP_ENTRIES).toBe(5000);
   });
 });

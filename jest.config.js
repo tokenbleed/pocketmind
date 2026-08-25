@@ -46,10 +46,6 @@ module.exports = {
       '<rootDir>/__mocks__/external/@dr.pogodin/react-native-fs.js',
     'react-native-haptic-feedback':
       '<rootDir>/__mocks__/external/react-native-haptic-feedback.js',
-    '@react-native-firebase/app':
-      '<rootDir>/__mocks__/external/@react-native-firebase/app.js',
-    '@react-native-firebase/app-check':
-      '<rootDir>/__mocks__/external/@react-native-firebase/app-check.js',
     '\\.svg': '<rootDir>/__mocks__/external/react-native-svg.js',
     'react-native-keychain':
       '<rootDir>/__mocks__/external/react-native-keychain.js',

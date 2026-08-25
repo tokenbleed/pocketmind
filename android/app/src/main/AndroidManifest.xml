@@ -58,6 +58,20 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="pocketpal" android:host="hub" />
         </intent-filter>
+        <!-- Share sheet: receive plain-text shares from other apps. The
+             text is parked for the chat input, never auto-sent. -->
+        <intent-filter>
+            <action android:name="android.intent.action.SEND" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="text/plain" />
+        </intent-filter>
+        <!-- Text selection menu (PROCESS_TEXT): "Ask PocketPal" entry for
+             selected text. Same parking flow as SEND. -->
+        <intent-filter>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:mimeType="text/plain" />
+        </intent-filter>
         <!-- Checkout callback for the in-app PalsHub purchase flow. Scoped to
              host=checkout so it is routed to AuthSessionModule, not the
              hub deep-link path. -->

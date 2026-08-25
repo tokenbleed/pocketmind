@@ -18,6 +18,7 @@ import {ttsStore, uiStore} from './src/store';
 import {ensureApiServerRouter} from './src/services/localApi/serverRouter';
 import {useTheme} from './src/hooks';
 import {useDeepLinking} from './src/hooks/useDeepLinking';
+import {useShareIntent} from './src/hooks/useShareIntent';
 import {Theme} from './src/utils/types';
 
 import {l10n, initLocale} from './src/locales';
@@ -60,6 +61,7 @@ const screenWidth = Dimensions.get('window').width;
 // Component that handles deep linking - must be inside NavigationContainer
 const DeepLinkHandler = () => {
   useDeepLinking();
+  useShareIntent();
   return null;
 };
 

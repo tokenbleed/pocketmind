@@ -131,6 +131,15 @@ jest.mock('../src/specs/NativeApiServer', () => ({
   },
 }));
 
+// Mock the share-intent TurboModule. Tests override takePendingText per
+// case; the default models "nothing parked".
+jest.mock('../src/specs/NativeShareIntent', () => ({
+  __esModule: true,
+  default: {
+    takePendingText: jest.fn(() => Promise.resolve(null)),
+  },
+}));
+
 jest.mock('react-native-safe-area-context', () => {
   const inset = {top: 0, right: 0, bottom: 0, left: 0};
   return {

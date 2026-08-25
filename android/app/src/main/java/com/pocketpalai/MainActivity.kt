@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import androidx.core.view.WindowCompat   // for edge-to-edge pre API 35
 import android.content.Intent
 import android.content.res.Configuration
@@ -33,6 +34,10 @@ class MainActivity : ReactActivity() {
       // and https://github.com/software-mansion/react-native-screens?tab=readme-ov-file#android
       super.onCreate(null)
 
+      // Cold-start share (ACTION_SEND / PROCESS_TEXT): park the text for
+      // the JS router to drain on mount; no emit is possible yet.
+      ShareIntentHolder.capture(intent)
+
       fixExternalDisplayDensity()
 
       WindowCompat.enableEdgeToEdge(window)  // enable E2E pre-Android 15
@@ -57,10 +62,27 @@ class MainActivity : ReactActivity() {
    */
   override fun onNewIntent(intent: Intent) {
       super.onNewIntent(intent)
+      // Warm share: park, then poke JS to drain it. The event carries no
+      // data, so a missed or replayed poke cannot double-deliver.
+      if (ShareIntentHolder.capture(intent)) {
+          emitSharedTextPoke()
+          return
+      }
       if (forwardCheckoutCallback(intent)) {
           return
       }
       setIntent(intent)
+  }
+
+  /** Fire a no-payload poke so the running JS drains the parked share
+   *  text. Safe when no react context is up; the cold-start path covers
+   *  that case via the mount-time drain. */
+  private fun emitSharedTextPoke() {
+      val reactContext =
+          (application as ReactApplication).reactHost?.currentReactContext ?: return
+      reactContext
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+          .emit("sharedText", null)
   }
 
   private fun forwardCheckoutCallback(intent: Intent): Boolean {

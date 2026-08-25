@@ -15,6 +15,33 @@ export class LocalCompletionEngine implements CompletionEngine {
     params: ApiCompletionParams,
     callback?: (data: CompletionStreamData) => void,
   ): Promise<CompletionResult> {
+    // llama.rn throws "Context is busy" synchronously when the native
+    // context has not finished winding down a previous completion
+    // (stop-then-send, a fast tool-call turn, or a double-send). That
+    // window is milliseconds; retry a bounded number of times instead
+    // of surfacing a native error to the user.
+    const MAX_BUSY_RETRIES = 5;
+    const BUSY_RETRY_DELAY_MS = 120;
+    let lastBusyError: unknown;
+    for (let attempt = 0; attempt < MAX_BUSY_RETRIES; attempt++) {
+      try {
+        return await this.attemptCompletion(params, callback);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (!msg.includes('Context is busy')) {
+          throw err;
+        }
+        lastBusyError = err;
+        await new Promise(resolve => setTimeout(resolve, BUSY_RETRY_DELAY_MS));
+      }
+    }
+    throw lastBusyError;
+  }
+
+  private async attemptCompletion(
+    params: ApiCompletionParams,
+    callback?: (data: CompletionStreamData) => void,
+  ): Promise<CompletionResult> {
     const result = await this.context.completion(
       params,
       callback

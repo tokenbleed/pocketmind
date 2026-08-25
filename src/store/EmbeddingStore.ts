@@ -44,6 +44,24 @@ class EmbeddingStore {
 
   private releaseTimer: ReturnType<typeof setTimeout> | null = null;
 
+  /** Serializes all native embedding-context work. llama.rn throws
+   * "Context is busy" when a second embedding()/release() arrives while
+   * one is in flight, and two call sites can genuinely race (background
+   * document indexing vs. the retrieval query embed at message send).
+   * Every public path funnels through this queue, so at most one native
+   * call is ever outstanding on the embedding context. */
+  private nativeQueue: Promise<unknown> = Promise.resolve();
+
+  private enqueue<T>(op: () => Promise<T>): Promise<T> {
+    const run = this.nativeQueue.then(op, op);
+    // Keep the chain alive regardless of the previous op's outcome.
+    this.nativeQueue = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
+  }
+
   /** Cached CPU recommendation so repeated context creation does not
    * re-query DeviceInfo. Null until first resolved. */
   private recommendedThreads: number | null = null;
@@ -131,20 +149,25 @@ class EmbeddingStore {
       return this.context;
     }
     if (this.context) {
-      await this.release();
+      // Internal swap path: we may already be inside a queued op, so
+      // this must NOT re-enter nativeQueue (it would self-deadlock).
+      await this.releaseNow();
     }
     return this.create(presetId);
   }
 
-  /** Embed one text, L2-normalized. Truncation happens natively at n_ctx. */
+  /** Embed one text, L2-normalized. Truncation happens natively at n_ctx.
+   * Serialized: see nativeQueue. */
   async embed(text: string, presetId: string): Promise<Float32Array> {
-    const context = await this.ensureContext(presetId);
-    this.scheduleIdleRelease();
-    const result = await context.embedding(text, {
-      // 2 = L2 normalization in llama.cpp's embd_normalize.
-      embd_normalize: 2,
+    return this.enqueue(async () => {
+      const context = await this.ensureContext(presetId);
+      this.scheduleIdleRelease();
+      const result = await context.embedding(text, {
+        // 2 = L2 normalization in llama.cpp's embd_normalize.
+        embd_normalize: 2,
+      });
+      return l2Normalize(result.embedding);
     });
-    return l2Normalize(result.embedding);
   }
 
   private scheduleIdleRelease(): void {
@@ -161,10 +184,19 @@ class EmbeddingStore {
    * model-load latency (mmap, ~1s) behind file extraction. Fire-and-
    * forget safe; errors are swallowed by the caller. */
   async prewarm(presetId: string): Promise<void> {
-    await this.ensureContext(presetId);
+    await this.enqueue(() => this.ensureContext(presetId));
   }
 
   async release(): Promise<void> {
+    // Routed through the queue so a release can never land between an
+    // in-flight embed and its native call (the AppState background
+    // listener fires while indexing may be running).
+    await this.enqueue(() => this.releaseNow());
+  }
+
+  /** Internal, UNSYNCHRONIZED release. Callers already hold nativeQueue
+   * (embed/prewarm swap path) or have drained it (public release). */
+  private async releaseNow(): Promise<void> {
     const ctx = this.context;
     if (!ctx) {
       return;

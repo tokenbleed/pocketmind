@@ -14,3 +14,4 @@ export * from './CheckoutFlowStore';
 export * from './SearchProviderStore';
 export * from './AgentFsStore';
 export * from './ApiServerStore';
+export * from './PoolStore';

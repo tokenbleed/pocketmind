@@ -11,7 +11,7 @@ import {
 
 import {SettingsScreen} from '../SettingsScreen';
 
-import {modelStore, uiStore, ttsStore, apiServerStore} from '../../../store';
+import {modelStore, uiStore, ttsStore, apiServerStore, poolStore} from '../../../store';
 import {l10n} from '../../../locales';
 
 jest.useFakeTimers();
@@ -1324,6 +1324,39 @@ describe('SettingsScreen', () => {
         fireEvent(getByTestId('local-api-stop'), 'press');
       });
       expect(apiServerStore.stop).toHaveBeenCalled();
+    });
+  });
+
+  describe('Pooled compute', () => {
+    it('renders the endpoints input and worker toggle', async () => {
+      const {getByTestId} = render(<SettingsScreen />, {
+        withSafeArea: true,
+        withNavigation: true,
+      });
+
+      expect(getByTestId('pool-endpoints-input')).toBeTruthy();
+      expect(getByTestId('pool-worker-switch')).toBeTruthy();
+      expect(getByTestId('pool-worker-status').props.children).toBe('Off');
+    });
+
+    it('updates host endpoints and starts the worker on toggle', async () => {
+      const {getByTestId} = render(<SettingsScreen />, {
+        withSafeArea: true,
+        withNavigation: true,
+      });
+
+      fireEvent.changeText(
+        getByTestId('pool-endpoints-input'),
+        '192.168.1.5:50052',
+      );
+      expect(poolStore.setHostEndpoints).toHaveBeenCalledWith(
+        '192.168.1.5:50052',
+      );
+
+      fireEvent(getByTestId('pool-worker-switch'), 'onValueChange', true);
+      await waitFor(() => {
+        expect(poolStore.startWorker).toHaveBeenCalled();
+      });
     });
   });
 });

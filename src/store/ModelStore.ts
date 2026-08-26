@@ -23,6 +23,7 @@ import {
 import {uiStore, hfStore} from '.';
 import {serverStore} from './ServerStore';
 import {chatSessionStore} from './ChatSessionStore';
+import {poolStore} from './PoolStore';
 import {
   draftCacheDefaults,
   effectiveDraftModeOf,
@@ -2296,11 +2297,17 @@ class ModelStore {
       const contextInitParams = createContextInitParams(effectiveSettings);
 
       const t0 = Date.now();
+      // Multi-phone pooled compute: hand worker endpoints to llama.cpp so it
+      // registers each RPC device and splits tensors across the pool. Kept
+      // out of ContextInitParams: worker IPs are network state, not model
+      // config, and must not be persisted per-model or migrated.
+      const rpcServers = poolStore.rpcServers;
       const ctx = await initLlama(
         {
           model: filePath,
           ...effectiveSettings, // Use effectiveSettings without version for llama.rn
           use_progress_callback: true,
+          ...(rpcServers.length > 0 ? {rpc_servers: rpcServers} : {}),
         },
         (_progress: number) => {
           //console.log('progress: ', _progress);

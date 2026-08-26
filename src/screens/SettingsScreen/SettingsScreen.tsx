@@ -59,6 +59,7 @@ import {
   ttsStore,
   searchProviderStore,
   knowledgeBaseStore,
+  poolStore,
 } from '../../store';
 import type {SearchProviderId} from '../../services/search/types';
 import {ROUTES} from '../../utils/navigationConstants';
@@ -1087,6 +1088,67 @@ export const SettingsScreen: React.FC = observer(() => {
                     value={uiStore.autoNavigatetoChat}
                     onValueChange={value =>
                       uiStore.setAutoNavigateToChat(value)
+                    }
+                  />
+                </View>
+              </View>
+            </Card.Content>
+          </Card>
+
+          {/* Pooled Compute */}
+          <Card elevation={0} style={styles.card} testID="pooled-compute-card">
+            <Card.Title title={l10n.pool.cardTitle} />
+            <Card.Content>
+              <View style={styles.settingItemContainer}>
+                <Text variant="titleMedium" style={styles.textLabel}>
+                  {l10n.pool.hostTitle}
+                </Text>
+                <Text variant="labelSmall" style={styles.textDescription}>
+                  {l10n.pool.hostDescription}
+                </Text>
+                <TextInput
+                  testID="pool-endpoints-input"
+                  style={styles.textInput}
+                  value={poolStore.hostEndpoints}
+                  onChangeText={poolStore.setHostEndpoints}
+                  placeholder={l10n.pool.hostPlaceholder}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="ascii-capable"
+                />
+                <Text variant="labelSmall" style={styles.textDescription}>
+                  {l10n.pool.hostNote}
+                </Text>
+                <Divider />
+
+                {/* Worker mode */}
+                <View style={styles.switchContainer}>
+                  <View style={styles.textContainer}>
+                    <Text variant="titleMedium" style={styles.textLabel}>
+                      {l10n.pool.workerTitle}
+                    </Text>
+                    <Text variant="labelSmall" style={styles.textDescription}>
+                      {l10n.pool.workerDescription}
+                    </Text>
+                    <Text
+                      variant="labelSmall"
+                      style={styles.textDescription}
+                      testID="pool-worker-status">
+                      {poolStore.workerActive
+                        ? `${l10n.pool.workerActive} ${poolStore.workerPort}`
+                        : l10n.pool.workerInactive}
+                    </Text>
+                    {poolStore.workerError && (
+                      <Text style={styles.errorText}>
+                        {poolStore.workerError}
+                      </Text>
+                    )}
+                  </View>
+                  <Switch
+                    testID="pool-worker-switch"
+                    value={poolStore.workerActive}
+                    onValueChange={value =>
+                      value ? poolStore.startWorker() : poolStore.stopWorker()
                     }
                   />
                 </View>

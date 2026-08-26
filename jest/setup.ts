@@ -64,6 +64,7 @@ import {mockSearchProviderStore} from '../__mocks__/stores/searchProviderStore';
 import {mockAgentFsStore} from '../__mocks__/stores/agentFsStore';
 import {mockApiServerStore} from '../__mocks__/stores/apiServerStore';
 import {mockKnowledgeBaseStore} from '../__mocks__/stores/knowledgeBaseStore';
+import {mockPoolStore} from '../__mocks__/stores/poolStore';
 import {mockEmbeddingStore} from '../__mocks__/stores/embeddingStore';
 
 jest.mock('@react-native-clipboard/clipboard', () => mockClipboard);
@@ -180,6 +181,7 @@ jest.mock('../src/store', () => {
     agentFsStore: mockAgentFsStore,
     apiServerStore: mockApiServerStore,
     knowledgeBaseStore: mockKnowledgeBaseStore,
+    poolStore: mockPoolStore,
     embeddingStore: mockEmbeddingStore,
     defaultCompletionSettings: mockDefaultCompletionSettings,
   };

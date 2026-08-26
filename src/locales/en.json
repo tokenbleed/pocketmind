@@ -1494,6 +1494,17 @@
     "downloadTitle": "Download a voice model",
     "downloadBody": "Voice input transcribes speech on-device with whisper. Pick a model; it downloads once and never leaves your phone."
   },
+  "pool": {
+    "cardTitle": "Pooled compute",
+    "hostTitle": "Worker phones",
+    "hostDescription": "Run bigger models by pooling memory with other phones on the same Wi-Fi running PocketMind in worker mode. Enter each worker as ip:port, one per line.",
+    "hostPlaceholder": "192.168.1.5:50052",
+    "hostNote": "Applied the next time a model is loaded. Workers that do not answer are skipped.",
+    "workerTitle": "Lend this phone",
+    "workerDescription": "Let a host phone on this network use this phone's memory and compute. There is no authentication: only enable it on a network you trust, ideally a private hotspot. The phone gets warm; keep it plugged in.",
+    "workerActive": "Listening on port",
+    "workerInactive": "Off"
+  },
   "errors": {
     "unexpectedError": "An unexpected error occurred",
     "hfAuthenticationError": "Hugging Face authentication error: Token is missing or invalid",

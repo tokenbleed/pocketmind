@@ -48,6 +48,12 @@ export const LlamaContext = jest
 
 export const loadLlamaModelInfo = jest.fn();
 
+export const startRpcServer = jest
+  .fn()
+  .mockResolvedValue({endpoint: '0.0.0.0:50052'});
+
+export const stopRpcServer = jest.fn().mockResolvedValue(undefined);
+
 export const initLlama = jest.fn();
 
 export const toggleNativeLog = jest.fn().mockResolvedValue(undefined);

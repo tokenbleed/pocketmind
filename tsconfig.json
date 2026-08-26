@@ -3,6 +3,9 @@
   "compilerOptions": {
     "noImplicitAny": false,
     "experimentalDecorators": true,
+    "paths": {
+      "whisper.rn": ["./node_modules/whisper.rn/src/index.ts"]
+    },
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": true,
     "skipLibCheck": true,

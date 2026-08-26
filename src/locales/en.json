@@ -1484,6 +1484,16 @@
       "versionFormat": "{{version}} ({{buildNumber}})"
     }
   },
+  "stt": {
+    "micLabel": "Voice input",
+    "transcribing": "Transcribing…",
+    "noSpeech": "Nothing recognized, try again",
+    "transcriptionFailed": "Transcription failed",
+    "recordingFailed": "Could not start recording",
+    "permissionDenied": "Microphone permission denied",
+    "downloadTitle": "Download a voice model",
+    "downloadBody": "Voice input transcribes speech on-device with whisper. Pick a model; it downloads once and never leaves your phone."
+  },
   "errors": {
     "unexpectedError": "An unexpected error occurred",
     "hfAuthenticationError": "Hugging Face authentication error: Token is missing or invalid",

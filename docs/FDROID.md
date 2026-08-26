@@ -25,7 +25,7 @@ proprietary or blob components in it. Verified against
 Build command on a clean checkout:
 
 ```
-npm install          # postinstall applies patches via patch-package
+yarn install --frozen-lockfile  # postinstall applies patches via patch-package
 cd android
 ./gradlew assembleFdroidRelease
 ```
@@ -49,9 +49,13 @@ Play build and still passes `scripts/verify-android-payload.js`.
   `onnxruntime-android` Maven AAR (open source, built by Microsoft CI).
   Only the JSI wrapper (`libonnxruntimejsi.so`) compiles from source in
   our tree. Same class of question as Hermes.
-- **No lockfile**: the repo has no `package-lock.json`, so dependency
-  resolution at F-Droid build time is whatever npm resolves that day.
-  Adding a lockfile before the request removes an easy objection.
+- **whisper.rn**: the npm tarball ships no prebuilt objects; the CMake
+  build compiles whisper.cpp and `librnwhisper*.so` from source for
+  arm64-v8a and x86_64. Verified in the fdroid APK (no binary blobs).
+- **Lockfile**: `yarn.lock` is committed and `yarn install
+  --frozen-lockfile` pins exact versions, so dependency resolution at
+  F-Droid build time is reproducible. The repo uses yarn 1.22; do not
+  run `npm install` (it produces ERESOLVE conflicts and a divergent tree).
 - **Node version**: `engines.node >= 22.21.0`; the F-Droid buildserver node
   must satisfy it (verify in MR CI).
 - **Scanner entries**: `node_modules/llama.rn/bin/` (prebuilt DSP and
@@ -90,7 +94,7 @@ Builds:
     versionCode: 148
     commit: v1.18.1
     subdir: android
-    init: npm install
+    init: yarn install --frozen-lockfile
     gradle:
       - fdroid
     output: app/build/outputs/apk/fdroid/release/app-fdroid-release.apk

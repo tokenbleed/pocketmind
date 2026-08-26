@@ -47,7 +47,7 @@ const isHuggingFaceUrl = (url: string | undefined): boolean => {
 };
 
 export class DownloadManager {
-  private downloadJobs: DownloadMap;
+  downloadJobs: DownloadMap;
   private callbacks: DownloadEventCallbacks = {};
   private eventEmitter: NativeEventEmitter | null = null;
   private cancelledModelIds = new Set<string>();

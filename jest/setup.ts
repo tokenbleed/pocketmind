@@ -140,6 +140,17 @@ jest.mock('../src/specs/NativeShareIntent', () => ({
   },
 }));
 
+// Mock the STT recorder TurboModule. Tests override start/stop per
+// case; defaults model an idle recorder with a fixed WAV path.
+jest.mock('../src/specs/NativeSttRecorder', () => ({
+  __esModule: true,
+  default: {
+    start: jest.fn(() => Promise.resolve('/cache/stt/recording-test.wav')),
+    stop: jest.fn(() => Promise.resolve('/cache/stt/recording-test.wav')),
+    cancel: jest.fn(() => Promise.resolve()),
+  },
+}));
+
 jest.mock('react-native-safe-area-context', () => {
   const inset = {top: 0, right: 0, bottom: 0, left: 0};
   return {

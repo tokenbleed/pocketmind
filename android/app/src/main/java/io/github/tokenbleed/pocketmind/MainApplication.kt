@@ -20,6 +20,7 @@ import io.github.tokenbleed.pocketmind.ExternalContentLinkPackage
 import io.github.tokenbleed.pocketmind.PdfTextPackage
 import io.github.tokenbleed.pocketmind.SafFsPackage
 import io.github.tokenbleed.pocketmind.ShareIntentPackage
+import io.github.tokenbleed.pocketmind.SttRecorderPackage
 import io.github.tokenbleed.pocketmind.download.DownloadPackage
 
 class MainApplication : Application(), ReactApplication {
@@ -41,6 +42,7 @@ class MainApplication : Application(), ReactApplication {
               add(ApiServerPackage())
               add(ShareIntentPackage())
               add(DownloadPackage())
+              add(SttRecorderPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

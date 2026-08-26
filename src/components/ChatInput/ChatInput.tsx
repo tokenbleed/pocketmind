@@ -47,6 +47,7 @@ import {
 import {t} from '../../locales';
 
 import {SendButton, StopButton, Menu, VoiceChip} from '..';
+import {SttMicButton} from '../SttMicButton/SttMicButton';
 import {NavigationContext} from '@react-navigation/native';
 import {ROUTES} from '../../utils/navigationConstants';
 
@@ -252,6 +253,14 @@ export const ChatInput = observer(
         setText(newText);
         textInputProps?.onChangeText?.(newText);
       }
+    };
+
+    // Voice input appends the transcript to the draft; it never sends.
+    const handleVoiceTranscript = (transcript: string) => {
+      const merged = value
+        ? `${value}${value.endsWith(' ') ? '' : ' '}${transcript}`
+        : transcript;
+      handleChangeText(merged);
     };
 
     const handleSend = () => {
@@ -817,6 +826,15 @@ export const ChatInput = observer(
                     {l10n.chat.cannotSendWithoutModel}
                   </Text>
                 </View>
+              )}
+
+              {/* Voice input (STT). Transcript lands in the composer as
+                  an editable draft; nothing is sent by itself. */}
+              {!isEditMode && (
+                <SttMicButton
+                  onTranscript={handleVoiceTranscript}
+                  disabled={isStreaming || textInputProps?.editable === false}
+                />
               )}
 
               {/* Voice chip (TTS) - always present so users can stop

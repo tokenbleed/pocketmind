@@ -151,7 +151,47 @@ android {
             dimension "distribution"
             // applicationId stays as defaultConfig:
             // io.github.tokenbleed.pocketmind
+            // Google Play distribution: ships the Billing
+            // ExternalContentLinkModule (src/prod) and the full rnllama
+            // variant set including the Hexagon/QDSP6 backend.
         }
+        fdroid {
+            dimension "distribution"
+            // Free-software distribution: no proprietary Google or Qualcomm
+            // bits. src/fdroid provides a noop ExternalContentLinkModule,
+            // the billing client dependency is absent (prodImplementation
+            // only), and the packaging excludes below drop the Hexagon
+            // blobs even if a hexagon variant was built or the HTP asset
+            // sync copied libggml-htp-*.so from llama.rn/bin/.
+        }
+    }
+}
+
+// Per-variant packaging (AGP androidComponents API): strip proprietary
+// artifacts from the fdroid APK. This is defense in depth next to the
+// settings.gradle variant narrowing; the APK must stay blob-free even if
+// someone builds with the full variant list.
+androidComponents {
+    onVariants(selector().withFlavor("distribution", "fdroid")) { variant ->
+        variant.packaging.jniLibs.excludes.add("**/*hexagon_opencl.so")
+        variant.packaging.jniLibs.excludes.add("**/libcdsprpc.so")
+    }
+}
+
+// fdroid flavor: never sync the prebuilt libggml-htp-*.so DSP blobs into
+// src/main/assets/ggml-hexagon (that dir is shared across flavors and
+// gitignored, so leftovers from a prod build on the same machine would
+// otherwise leak into the fdroid APK; APK asset packaging has no per-variant
+// exclude filter). prod builds re-sync after any fdroid build wiped them.
+if (gradle.startParameter.taskNames.any { it.toLowerCase(Locale.ROOT).contains("fdroid") }) {
+    tasks.matching { it.name == "syncRNLlamaHtpAssets" }.configureEach {
+        onlyIf { false }
+    }
+    def stripHtpAssets = tasks.register("stripHtpAssetsForFdroid", Delete) {
+        delete file("src/main/assets/ggml-hexagon")
+    }
+    tasks.matching { it.name == "preBuild" }.configureEach {
+        dependsOn(stripHtpAssets)
     }
 }
 
@@ -188,8 +228,10 @@ dependencies {
     // Chrome Custom Tabs for the in-app PalsHub checkout (AuthSessionModule)
     implementation "androidx.browser:browser:1.8.0"
 
-    // Google Play Billing, External Content Links program (ExternalContentLinkModule)
-    implementation "com.android.billingclient:billing:8.2.1"
+    // Google Play Billing, External Content Links program (ExternalContentLinkModule).
+    // prod flavor only: the fdroid flavor must not link any Google
+    // proprietary library, and its noop module needs none of these classes.
+    prodImplementation "com.android.billingclient:billing:8.2.1"
 
     // OkHttp for DownloadModule (network requests)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

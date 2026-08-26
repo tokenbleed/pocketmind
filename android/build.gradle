@@ -21,3 +21,25 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// F-Droid builds must not ship the proprietary Hexagon/QDSP6 backend: the
+// libggml-htp-*.so blobs that llama.rn syncs from its bin/ are prebuilt
+// Qualcomm artifacts, and the hexagon_opencl variant exists for Play
+// distribution. When the requested tasks target the fdroid flavor:
+//  - set the llama.rn variant list (ext on the subproject wins over
+//    gradle.properties in findProperty) so CMake skips hexagon_opencl
+//  - skip the HTP asset sync and delete any previously synced blobs from
+//    src/main/assets/ggml-hexagon (shared across flavors, gitignored)
+// The packaging excludes in app/build.gradle remain as defense in depth.
+// CLI builds can always override with -PrnllamaVariants=..., which beats
+// every mechanism here.
+if (gradle.startParameter.taskNames.any { it.toLowerCase(Locale.ROOT).contains("fdroid") }) {
+    subprojects { p ->
+        if (p.name == "llama.rn") {
+            p.ext.set(
+                "rnllamaVariants",
+                "rnllama,rnllama_v8,rnllama_v8_2,rnllama_v8_2_dotprod,rnllama_v8_2_dotprod_i8mm,rnllama_x86_64")
+        }
+    }
+    println("fdroid build: rnllama variants narrowed (no hexagon_opencl)")
+}

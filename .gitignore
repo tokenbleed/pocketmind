@@ -99,5 +99,8 @@ android/android-build.log
 # synced into the worktree for local reference; never committed here.
 workflows/
 
+# llama.rn syncRNLlamaHtpAssets copies the HTP DSP libraries here at build time
+android/app/src/main/assets/ggml-hexagon/
+
 # Local stress-test/benchmark output, never committed
 /debug-output/
